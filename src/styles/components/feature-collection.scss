@@ -1,0 +1,95 @@
+.feature-collection {
+    padding: 10px;
+
+    .action-buttons {
+        padding: 5px 0 0 0;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .feature:not(:last-child) {
+        margin-bottom: 5px;
+    }
+}
+
+.feature {
+    background-color: $color-primary;
+    border-radius: 6px;
+    padding: 6px 12px;
+
+    .feature-row {
+        display: flex;
+        align-items: center;
+
+        &:not(:last-child) {
+            padding-bottom: 5px;
+        }
+
+        .feature-name {
+            width: 100%;
+            padding: 0 20px 0 10px;
+
+            .feature-name-textbox {
+                @include ellipsis();
+
+                width: 100%;
+                font-size: 16pt;
+                font-weight: $w-semibold;
+                color: $white;
+                text-align: center;
+                caret-color: transparent;
+
+                &.enabled {
+                    margin-bottom: -2px;
+                    border-bottom: 2px solid $color-primary-l2;
+                    color: $color-primary-l3;
+                    caret-color: $white;
+
+                    &::selection {
+                        color: $color-primary;
+                        background-color: $color-primary-l3;
+                    }
+                }
+            }
+        }
+
+        .feature-buttons {
+            display: flex;
+            
+            > *:not(:last-child) {
+                margin: 0 6px 0 0;
+            }
+        }
+
+        .feature-buttons-placeholder {
+            width: 82px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+
+        .feature-id {
+            width: 100%;
+            padding: 0 2px;
+
+            display: flex;
+            align-items: flex-end;
+
+            text-align: left;
+            font-family: $font-mono;
+            font-weight: $w-light;
+            font-size: 10pt;
+            color: $color-primary-highlight;
+        }
+
+        .feature-quick-actions {
+            @include no-wrap();
+            @include no-select();
+        }
+
+        &.name-row {
+            .toggle-feature {
+                flex-shrink: 0;
+            }
+        }
+    }
+}

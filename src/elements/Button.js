@@ -28,7 +28,7 @@ function Button (props) {
             onClick={props.onClick}
             disabled={props.disabled}
         >
-            {props.icon && iconStyle === "g" && <span className="icon material-icons"></span>}
+            {props.icon && iconStyle === "g" && <span className="icon material-icons">{props.icon}</span>}
             {props.icon && iconStyle === "g-round" && <span className="icon material-icons-round">{props.icon}</span>}
             {props.icon && iconStyle === "g-outline" && <span className="icon material-icons-outlined">{props.icon}</span>}
             {props.icon && iconStyle === "line" && <span className={`icon las ${props.icon}`} />}

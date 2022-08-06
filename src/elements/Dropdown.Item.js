@@ -1,6 +1,6 @@
 import React from 'react';
 
-function DropdownItem (props) {
+function Dropdown_Item (props) {
     function onClick () {
         props.onClick();
         props._closeMenu();
@@ -16,4 +16,4 @@ function DropdownItem (props) {
     );
 }
 
-export default DropdownItem;
+export default Dropdown_Item;

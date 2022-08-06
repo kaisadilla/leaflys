@@ -35,6 +35,11 @@ function NavBar (props) {
                     <Button baseStyle="normal" label="Open" />
                     <Button baseStyle="success" label="Save" />
                 </div>
+                <div className="navbar-button-group">
+                    <span className="navbar-group-name">Geojson</span>
+                    <Button baseStyle="normal" label="Import" />
+                    <Button baseStyle="success" label="Export" />
+                </div>
             </div>
         </nav>
     );

@@ -1,0 +1,17 @@
+/********************
+ * Native overrides *
+ ********************/
+.leaflet-control-zoom {
+    > a {
+        font-weight: $w-regular;
+    }
+}
+
+/***************
+ * Leaflet map *
+ ***************/
+.map-frame {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+}

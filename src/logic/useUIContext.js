@@ -35,4 +35,4 @@ export const UIContextProvider = ({ children }) => {
             {children}
         </UIContext.Provider>
     );
-}
+};

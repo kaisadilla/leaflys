@@ -1,0 +1,10 @@
+.editor-panel-map {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(100vh - #{$navbar-height});
+    min-height: 100px;
+    min-width: 100px;
+
+    padding: $editor-panel-map-padding;
+    background-color: $color-primary;
+}

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Button from "./Button";
 import PopupDiv from "./PopupDiv";
-import DropdownItem from "./Dropdown.Item";
-import DropdownSeparator from "./Dropdown.Separator";
+import Dropdown_Item from "./Dropdown.Item";
+import Dropdown_Separator from "./Dropdown.Separator";
 
 /**
  * Valid props:
@@ -39,7 +39,7 @@ function Dropdown (props) {
     );
 }
 
-Dropdown.Item = DropdownItem;
-Dropdown.Separator = DropdownSeparator;
+Dropdown.Item = Dropdown_Item;
+Dropdown.Separator = Dropdown_Separator;
 
 export default Dropdown;

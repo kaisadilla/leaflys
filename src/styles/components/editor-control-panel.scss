@@ -1,0 +1,84 @@
+.editor-control-panel {
+    background-color: $white;
+
+    width: 100%;
+    max-width: 500px;
+    height: calc(100vh - #{$navbar-height});
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    .control-panel {
+        @include scrollbar-thin($color-primary, $white);
+
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 150px;
+        padding: $control-panel-padding;
+        overflow-y: scroll;
+
+        h1, h2, h3, h4, h5, h6 {
+            border-bottom: 1px solid $color-primary-l1;
+            padding-bottom: 5px;
+            margin: 18px 0 6px 0;
+
+            &.toggle-header {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: -4px;
+
+                > * {
+                    margin: 0 5px;
+                }
+            }
+        }
+
+        h1 {
+            font-size: 20pt;
+        }
+        h2 {
+            font-size: 16pt;
+            font-weight: $w-semibold;
+        }
+        h3 {
+            font-size: 14pt;
+            font-weight: $w-regular;
+        }
+
+        .collection-section {
+            display: flex;
+            align-items: center;
+
+            .left, .center, .right {
+                height: 100%;
+            }
+            .left {
+                flex-shrink: 0;
+                display: flex;
+            }
+            .center {
+                @include ellipsis();
+
+                width: 100%;
+                padding: 0 8px;
+            }
+            .right {
+                flex-shrink: 0;
+            }
+        }
+
+        .control-panel-button-collection {
+            display: flex;
+            align-items: center;
+            
+            > *:not(:last-child) {
+                margin-right: 6px;
+            }
+
+            &.align-right {
+                justify-content: right;
+            }
+        }
+    }
+}

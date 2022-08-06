@@ -1,0 +1,21 @@
+.span-button {
+    display: inline-block;
+    font-weight: $w-regular;
+
+    &:hover {
+        font-weight: $w-bold;
+        cursor: pointer;
+    }
+
+    > span {
+        width: 100%;
+    }
+    
+    .icon {
+        font-size: 14pt;
+    }
+    
+    .label-margin::before {
+        content: "\00a0";
+    }
+}
