@@ -3,8 +3,11 @@ import { ImageOverlay, MapContainer, TileLayer, GeoJSON, Marker, Polyline, useMa
 import { DEFAULT_MAP_CENTER, DEFAULT_ZOOM } from '../global';
 
 import "leaflet/dist/leaflet.css";
+import useLeafletMap from './useLeafletMap';
 
 function LeafletMap (props) {
+    const { $drawablePolygons } = useLeafletMap();
+
     return (
         <MapContainer
             className="map-frame"
@@ -18,13 +21,14 @@ function LeafletMap (props) {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
                 </LayersControl.BaseLayer>
+                <LayersControl.BaseLayer name="Satellite">
+                    <TileLayer
+                        url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                        attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                    />
+                </LayersControl.BaseLayer>
             </LayersControl>
-            <LayersControl.BaseLayer name="Satellite">
-                <TileLayer
-                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                    attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-                />
-            </LayersControl.BaseLayer>
+            {$drawablePolygons}
         </MapContainer>
     );
 }

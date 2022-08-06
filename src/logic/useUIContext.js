@@ -16,6 +16,7 @@ export const useUIContext = () => useContext(UIContext);
 export const UIContextProvider = ({ children }) => {
     const [state, setState] = useState({
         editorMode: EDITOR_MODES.mapEditor,
+        featureEdited: null,
     });
 
     const value = useMemo(() => {
@@ -24,9 +25,15 @@ export const UIContextProvider = ({ children }) => {
             editorMode: mode,
         });
 
+        const setFeatureEdited = featureId => setState({
+            ...state,
+            featureEdited: featureId,
+        });
+
         return {
             ...state,
             setEditorMode,
+            setFeatureEdited,
         }
     }, [state]);
 

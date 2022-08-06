@@ -10,9 +10,17 @@ export const DocumentContextProvider = ({ children }) => {
     });
 
     const value = useMemo(() => {
+        const addNewPolygon = (name, category, id) => {
+            const newFeature = Helpers.getNew.polygon(name, category, id);
+            const newState = { ...state };
+            newState.document.features.polygons.push(newFeature);
+
+            setState(newState);
+        }
 
         return {
             ...state,
+            addNewPolygon,
         }
     }, [state]);
 

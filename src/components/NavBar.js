@@ -2,9 +2,11 @@ import React from 'react';
 import Button from '../elements/Button';
 import Dropdown from '../elements/Dropdown';
 import { EDITOR_MODES, EDITOR_MODES_NAMES, useUIContext } from '../logic/useUIContext';
+import useNavBar from './useNavBar';
 
 function NavBar (props) {
     const { editorMode, setEditorMode } = useUIContext();
+    const { saveDocument } = useNavBar();
 
     return (
         <nav className="navbar">
@@ -33,7 +35,7 @@ function NavBar (props) {
                 <div className="navbar-button-group">
                     <span className="navbar-group-name">Leaflys</span>
                     <Button baseStyle="normal" label="Open" />
-                    <Button baseStyle="success" label="Save" />
+                    <Button baseStyle="success" label="Save" onClick={saveDocument} />
                 </div>
                 <div className="navbar-button-group">
                     <span className="navbar-group-name">Geojson</span>
