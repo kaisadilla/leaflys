@@ -1,0 +1,2 @@
+export const DEFAULT_EDITOR_OVERLAY_LAT = 2.5;
+export const DEFAULT_EDITOR_OVERLAY_LONG = 14;

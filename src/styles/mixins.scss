@@ -1,0 +1,38 @@
+@mixin no-select () {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+@mixin select () {
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -o-user-select: text;
+    user-select: text;
+}
+
+@mixin no-wrap () {
+    white-space: nowrap;
+}
+
+@mixin ellipsis () {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin scrollbar-thin ($thumb-color, $bg-color) {
+    scrollbar-color: $thumb-color $bg-color;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        background-color: $bg-color;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: $thumb-color;
+    }
+}

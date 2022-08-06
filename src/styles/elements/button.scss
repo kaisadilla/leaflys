@@ -1,0 +1,126 @@
+.default-button {
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    align-itemS: center;
+    outline: 0px;
+    transition: background-color 0.25s ease-in-out, outline 0.1s ease-in-out;
+
+    .icon {
+        display: block;
+    }
+
+    &.size-small {
+        padding: 2px 6px;
+        .icon {
+            font-size: 12pt;
+        }
+        .label {
+            font-size: 8pt;
+        }
+    }
+    &.size-normal {
+        padding: 4px 9px;
+        .icon {
+            font-size: 15pt;
+        }
+        .label {
+            font-size: 10pt;
+        }
+    }
+    &.size-big {
+        padding: 4px 12px;
+        .icon {
+            font-size: 20pt;
+        }
+        .label {
+            font-size: 12pt;
+        }
+    }
+
+    &:disabled {
+        color: $white;
+        background-color: $gray3;
+    }
+
+    &.style-normal:not(:disabled) {
+        color: $white;
+        background-color: $color-primary;
+        &:hover {
+            background-color: $color-primary-d1;
+        }
+        &.selected {
+            background-color: $color-primary-d2;
+            outline: 3px solid rgba($color-primary, 0.4705);
+        }
+        &.highlight:focus {
+            outline: 3px solid rgba($color-primary, 0.4705);
+        }
+    }
+
+    &.style-clear:not(:disabled) {
+        color: $color-primary;
+        background-color: $color-primary-l3;
+        &:hover {
+            background-color: $color-primary-l4;
+        }
+        &.selected {
+            background-color: $color-primary-l2;
+            outline: 3px solid rgba($color-primary-l2, 0.4705);
+        }
+        &.highlight:focus {
+            outline: 3px solid rgba($color-primary, 0.4705);
+        }
+    }
+
+    &.style-inverted:not(:disabled) {
+        color: $color-primary;
+        background-color: $white;
+        &:hover {
+            background-color: $color-primary-l3;
+        }
+        &.selected {
+            background-color: $color-primary-l2;
+            outline: 3px solid rgba($color-primary-l2, 0.4705);
+        }
+        &.highlight:focus {
+            outline: 3px solid rgba($color-primary, 0.4705);
+        }
+    }
+
+    &.style-success:not(:disabled) {
+        color: $white;
+        background-color: #28a745;
+        &:hover {
+            background-color: #218838;
+        }
+        &.selected {
+            background-color: #144d20;
+            outline: 3px solid #28a74578;
+        }
+        &.highlight:focus {
+            outline: 3px solid #28a74578;
+        }
+    }
+    &.style-danger:not(:disabled) {
+        color: $white;
+        background-color: #dc3545;
+        &:hover {
+            background-color: #c82333;
+        }
+        &.selected {
+            background-color: #7c141e;
+            outline: 3px solid #dc354578;
+        }
+        &.highlight:focus {
+            outline: 3px solid #dc354578;
+        }
+    }
+    .icon {
+        font-weight: $regular;
+    }
+    
+    .label-margin::before {
+        content: "\00a0";
+    }
+}

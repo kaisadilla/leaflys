@@ -1,0 +1,32 @@
+@import "variables";
+@import "mixins";
+
+@import "root";
+
+@import "elements";
+@import "components";
+
+.app {
+    text-align: center;
+}
+
+/**
+ * This class only define the layout of the app. It does not define the style
+ * of the app and does not contain any CSS of any component inside the app.
+ */
+.map-editor {
+    position: relative;
+
+    .editor-tab {
+        height: 100vh;
+    }
+
+    .editor-navbar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: $navbar-height;
+        z-index: 100000;
+    }
+}

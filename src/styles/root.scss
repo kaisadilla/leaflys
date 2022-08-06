@@ -1,0 +1,55 @@
+/**************
+ * BASE STYLE *
+ **************/
+ :root {
+    font-family: $font-std;
+
+    /*::selection {
+        background-color: $secondary-color;
+        color: $black;
+    }*/
+}
+
+body {
+    font-family: $font-std;
+}
+
+b {
+    font-weight: 600;
+}
+
+a {
+    color: $black;
+    text-decoration: none;
+
+    /*&:hover {
+        color: $primary-color;
+        text-shadow: 0px 0px 4px $primary-color-light1;
+    }*/
+}
+
+button {
+    outline: none;
+    border: none;
+    background-color: $white;
+    color: $color-primary;
+
+    &:hover:not(:disabled) {
+        cursor: pointer;
+    }
+}
+
+input[type=text] {
+    border: 0px;
+    background-color: transparent;
+    font-family: $font-std;
+    font-size: 12pt;
+    font-weight: $regular;
+    color: $black;
+    outline: 0px;
+}
+
+body {
+    background-color: $white;
+    margin: 0;
+}

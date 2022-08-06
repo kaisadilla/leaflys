@@ -1,0 +1,59 @@
+.navbar {
+    background-color: green;
+
+    width: 100%;
+    height: $navbar-height;
+    outline: 1px solid $color-primary-l3;
+    background-color: $white;
+    display: flex;
+    align-items: center;
+
+    .editor-mode-menu {
+        margin-left: 12px;
+        
+        .editor-mode-menu-button {
+            border-radius: 0;
+            width: 200px;
+            height: 100%;
+            justify-content: center;
+            background-color: transparent;
+            color: $color-primary;
+
+            &:hover {
+                background-color: transparent;
+            }
+            
+            .label {
+                font-size: 14pt;
+            }
+        }
+
+        .editor-mode-menu-dropdown {
+            outline: 0 !important;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+
+    .navbar-io-section {
+        margin: calc(3vw + 12px);
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    .navbar-group-name {
+        padding: 0 9px 0 18px;
+        border-right: 1px solid $color-primary-l3;
+        line-height: 22pt;
+        margin-right: 3px;
+        height: 32px;
+        display: block;
+    }
+    
+    .navbar-button-group {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        column-gap: 6px;
+    }
+}
