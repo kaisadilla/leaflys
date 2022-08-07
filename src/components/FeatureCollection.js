@@ -22,7 +22,7 @@ function FeatureCollection (props) {
         
         if (!filteredOutByType && !filteredOutByCategory) {
             return (
-                <FeatureCollection.Feature key={p.id} index={i} geojson={p} />
+                <FeatureCollection.Feature key={p.id} index={i} feature={p} />
             );
         }
         else {
@@ -35,7 +35,9 @@ function FeatureCollection (props) {
             {$features}
             {
                 props.addButton &&
-                <Button baseStyle="success" icon="add" onClick={addFeatureToCategory} />
+                <div className="control-collection align-right">
+                    <Button baseStyle="success" icon="add" onClick={addFeatureToCategory} />
+                </div>
             }
         </div>
     );

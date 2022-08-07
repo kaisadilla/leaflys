@@ -1,0 +1,14 @@
+.default-checkbox {
+    display: flex;
+    .default-checkbox-control {
+        width: 18px;
+        height: 18px;
+        background-color: $color-primary;
+        margin-right: 8px;
+    }
+    .default-checkbox-legend {
+        &.highlight {
+            font-weight: $w-semibold;
+        }
+    }
+}

@@ -10,7 +10,7 @@ import React from 'react';
  ** label — The text of the button.
  ** icon — The icon of the button.
  ** iconStyle — [**g** | g-round | g-outline | line | fa] — The library that contains the icon.
- ** description — A legend to show on hover.
+ ** title — A legend to show on hover.
  ** selected {bool} — if true, display an outline.
  ** highlight {bool} — if true, display an outline when focused.
  */
@@ -27,6 +27,7 @@ function Button (props) {
             className={`default-button ${baseSize} ${baseStyle} ${selected} ${highlight} ${customClass}`}
             onClick={props.onClick}
             disabled={props.disabled}
+            title={props.title}
         >
             {props.icon && iconStyle === "g" && <span className="icon material-icons">{props.icon}</span>}
             {props.icon && iconStyle === "g-round" && <span className="icon material-icons-round">{props.icon}</span>}

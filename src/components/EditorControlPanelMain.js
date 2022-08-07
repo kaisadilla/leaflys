@@ -12,7 +12,7 @@ function EditorControlPanelMain (props) {
     const $polygonCollections = polygonCategories.map(c => (
         <React.Fragment key={c}>
             <h2 className="toggle-header">
-                <Switch id="enable-all" checked={true} />
+                <Switch id="enable-all" defaultChecked />
                 <span>{c}</span>
             </h2>
             <FeatureCollection typeFilter={["Polygon", "MultiPolygon"]} categoryFilter={[c]} addButton />
@@ -24,7 +24,7 @@ function EditorControlPanelMain (props) {
             <div className="control-panel">
                 <h1 className="collection-section">
                     <div className="left">
-                        <Switch id="enable-all" checked={true} />
+                        <Switch id="enable-all" defaultChecked />
                     </div>
                     <div className="center">
                         <span>Polygons</span>

@@ -1,0 +1,40 @@
+.default-textbox {
+    border: 0px;
+    outline: 0px;
+    background-color: transparent;
+    border-bottom: 1px solid $gray2;
+    padding: 0 6px;
+    color: $gray6;
+    width: 100%;
+
+    &:focus {
+        border-color: $color-primary-l1;
+        color: $color-primary-d3;
+    }
+
+    &.size-small {
+        border-bottom-width: 1px;
+        font-size: 10pt;
+    }
+    &.size-normal {
+        border-bottom-width: 1px;
+        font-size: 12pt;
+        &:focus {
+            border-bottom-width: 2px;
+            margin-bottom: -1px;
+        }
+    }
+    &.size-big {
+        border-bottom-width: 1px;
+        font-size: 14pt;
+        &:focus {
+            border-bottom-width: 2px;
+            margin-bottom: -1px;
+        }
+    }
+
+    &::selection {
+        background-color: $color-primary;
+        color: $white;
+    }
+}

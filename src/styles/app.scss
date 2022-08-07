@@ -31,3 +31,16 @@
         z-index: 100000;
     }
 }
+
+.control-collection {
+    display: flex;
+    align-items: center;
+    
+    > *:not(:last-child) {
+        margin-right: 6px;
+    }
+
+    &.align-right {
+        justify-content: right;
+    }
+}

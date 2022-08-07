@@ -5,36 +5,40 @@ import DormantTextbox from '../elements/DormantTextbox';
 import Button from '../elements/Button';
 import { toHaveFormValues } from '@testing-library/jest-dom/dist/matchers';
 import Helpers from '../logic/Helpers';
+import { useUIContext } from '../logic/useUIContext';
 
 function FeatureCollection_Feature(props) {
-    const geojson = props.geojson;
+    const { setEditedFeatureIndex } = useUIContext();
+
+    const feature = props.feature;
     const index = props.index;
 
-    const name = geojson.properties.name;
-    const id = geojson.id;
+    const name = feature.properties.name;
+    const id = feature.id;
 
-    const empty = geojson.geometry.coordinates.length === 0 || geojson.geometry.coordinates[0].length === 0;
-    const disabled = geojson.properties.leaflys ? geojson.properties.leaflys.disabled : false;
+    const empty = feature.geometry.coordinates.length === 0 || feature.geometry.coordinates[0].length === 0;
+    const disabled = feature.properties.leaflys ? feature.properties.leaflys.disabled : false;
 
-    const copyButton = () => copyFeature(geojson);
-    const exportButton = () => exportFeature(name, geojson);
+    const editButton = () => setEditedFeatureIndex(index, feature);
+    const copyButton = () => copyFeature(feature);
+    const exportButton = () => exportFeature(name, feature);
 
     return (
         <div className={`feature ${disabled ? "disabled-feature" : ""}`}>
             <div className="feature-row name-row">
-                <Switch className="toggle-feature" checked={!disabled} />
+                <Switch className="toggle-feature" defaultChecked />
                 <div className="feature-name">
                     <DormantTextbox
                         className="feature-name-textbox"
                         value={name}
-                        onChange={e => geojson.properties.name = e.target.value}
+                        onChange={e => feature.properties.name = e.target.value}
                     />
                 </div>
                 {
                     disabled ?
                     <div className="feature-buttons-placeholder"></div> :
                     <div className="feature-buttons">
-                        <Button baseStyle="clear" icon="edit" iconStyle="g-outline" />
+                        <Button baseStyle="clear" icon="edit" iconStyle="g-outline" onClick={editButton} />
                         <Button baseStyle="danger" icon="delete" iconStyle="g-outline" />
                     </div>
                 }

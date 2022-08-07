@@ -6,7 +6,7 @@ import useNavBar from './useNavBar';
 
 function NavBar (props) {
     const { editorMode, setEditorMode } = useUIContext();
-    const { saveDocument } = useNavBar();
+    const { openDocument, saveDocument } = useNavBar();
 
     return (
         <nav className="navbar">
@@ -34,7 +34,7 @@ function NavBar (props) {
             <div className="navbar-io-section">
                 <div className="navbar-button-group">
                     <span className="navbar-group-name">Leaflys</span>
-                    <Button baseStyle="normal" label="Open" />
+                    <Button baseStyle="normal" label="Open" onClick={openDocument} />
                     <Button baseStyle="success" label="Save" onClick={saveDocument} />
                 </div>
                 <div className="navbar-button-group">
