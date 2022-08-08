@@ -4,7 +4,7 @@ import Checkbox from '../elements/Checkbox';
 import InputCombo from '../elements/InputCombo';
 import Slider from '../elements/Slider';
 import Textbox from '../elements/Textbox';
-import { Number } from '../helpers/Number';
+import { MathHelper } from '../helpers/MathHelper';
 import { POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../global';
 import { useDocumentContext } from '../logic/useDocumentContext';
 import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '../logic/useUIContext';
@@ -114,7 +114,7 @@ function EditorControlPanelPolygon (props) {
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.draw)}
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.draw}
                             />
-                            <Button icon="fa-draw-polygon" iconStyle="fa" title="Move corners"
+                            <Button icon="fa-draw-polygon" iconStyle="fad" title="Move corners"
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.edit)}
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.edit}
                             />
@@ -124,7 +124,7 @@ function EditorControlPanelPolygon (props) {
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.cut}
                             />
                             <Button
-                                icon="fa-eraser" iconStyle="fa" title="Remove corners"
+                                icon="fa-eraser" iconStyle="fad" title="Remove corners"
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.eraser)}
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.eraser}
                             />
@@ -146,7 +146,7 @@ function EditorControlPanelPolygon (props) {
                         <h2>Edit mode</h2>
                         <div className="control-collection">
                             <Button
-                                icon="fa-map-pin" iconStyle="fa" title="Place points"
+                                icon="fa-map-pin" iconStyle="fad" title="Place points"
                                 onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.place)}
                                 selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.place}
                             />
@@ -156,7 +156,7 @@ function EditorControlPanelPolygon (props) {
                                 selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.draw}
                             />
                             <Button
-                                icon="pets" title="Copy foreign lines"
+                                icon="fa-magnet" iconStyle="fad" title="Copy foreign lines"
                                 onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.snap)}
                                 selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.snap}
                             />
@@ -189,7 +189,7 @@ function EditorControlPanelPolygon (props) {
                 <div className="data">
                     <div className="data-piece">
                         <span className="name">Area: </span>
-                        <span className="value">{Number.toString(42)} km²</span>
+                        <span className="value">{MathHelper.toString(42)} km²</span>
                     </div>
                     <div className="data-piece">
                         <span className="name">Vertices: </span>

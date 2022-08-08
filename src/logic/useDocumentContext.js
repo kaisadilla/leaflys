@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import Helpers from "./Helpers";
+import DocumentHelper from "../helpers/DocumentHelper";
 
 const DocumentContext = createContext(null);
 export const useDocumentContext = () => useContext(DocumentContext);
@@ -7,6 +7,10 @@ export const useDocumentContext = () => useContext(DocumentContext);
 export const DocumentContextProvider = ({ children }) => {
     const [state, setState] = useState({
         document: getInitialDocument(),
+        /**
+         * useEffect statements can subscribe to this flag to update when the document
+         * is substantially changed (e.g. when loading a new document). */
+        forceReloadFlag: false,
     });
 
     const value = useMemo(() => {
@@ -17,7 +21,8 @@ export const DocumentContextProvider = ({ children }) => {
         const setDocument = document => {
             setState({
                 ...state,
-                document: document
+                document: document,
+                forceReloadFlag: !state.forceReloadFlag,
             });
         }
         /**
@@ -27,7 +32,7 @@ export const DocumentContextProvider = ({ children }) => {
          * @param {*} id The id of the polygon.
          */
         const addNewPolygon = (name, category, id) => {
-            const newFeature = Helpers.getNew.polygon(name, category, id);
+            const newFeature = DocumentHelper.getNew.polygon(name, category, id);
             const newState = { ...state };
             newState.document.features.polygons.push(newFeature);
 
@@ -66,5 +71,5 @@ export const DocumentContextProvider = ({ children }) => {
  */
 function getInitialDocument () {
     // TODO: Read local storage.
-    return Helpers.getTemplate.document();
+    return DocumentHelper.getTemplate.document();
 }

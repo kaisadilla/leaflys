@@ -25,55 +25,11 @@ const useLeafletMap = () => {
     const { document } = useDocumentContext();
 
     const [builtMap, setBuiltMap] = useState(null);
-    const [$drawablePolygons, setDrawablePolygons] = useState([]);
 
     /*** edit polygon mode ***/
     /** stores the current coordinates of the marker that follows the mouse. */
     const [editMarkerCoords, setEditMarkerCoords] = useState([0, 0]);
     const [editCutPolygon, setEditCutPolygon] = useState([]);
-
-    /** If true, adding the current vertex will finish the shape and deselect the current editing tool. */
-    let finishVertex = false;
-
-    // update the array of features drawn to leaflet when a dependency in the array changes.
-    useEffect(() => {
-        console.log("Updating Leaflet features.");
-        if (editedFeatureIndex === null) {
-            const polys = getEnabledPolygons().map(p => <GeoJSON key={["edit", p.id]} data={p} />);
-            setDrawablePolygons(polys);
-        }
-        else if (editedFeatureIndex !== null) {
-            const foreignColor = document.settings.colors["foreign-color"];
-
-            let polys = getForeignPolygons().map(p => (
-                <GeoJSON key={["foreign", p.id]} data={p} color={foreignColor} fillColor={foreignColor} />
-            ));
-            polys.push(getEditedPolygon());
-
-            setDrawablePolygons(polys);
-        }
-        else {
-            console.log("[DEBUG] THIS SHOULDN'T BE REACHED");
-            const polys = [];
-            setDrawablePolygons(polys);
-        }
-    }, [editedFeatureIndex, editor.selectedTool, editMarkerCoords]);
-
-    /**
-     * Returns an array with the polygons in the document that are not disabled.
-     */
-    function getEnabledPolygons () {
-        return document.features.polygons.filter(p => p.properties.leaflys?.disabled === undefined || !p.properties.leaflys.disabled);
-    }
-
-    /**
-     * Returns an array with the enabled polygons in the document, except for
-     * the one that is being edited..
-     */
-    function getForeignPolygons () {
-        const editedPolygonId = document.features.polygons[editedFeatureIndex].id;
-        return getEnabledPolygons().filter(p => p.id !== editedPolygonId);
-    }
 
     function getEditedPolygon () {
         const activeColor = document.settings.colors["active-color"];
@@ -230,10 +186,6 @@ const useLeafletMap = () => {
         return _subpolys;
     }
 
-    function getPolygon_cut () {
-        // TODO. variable "editCutPolygon" declared already.
-    }
-
     function insertVertexAt (index, vertex) {
         const newFeature = { ...editedFeature };
         newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 0, vertex);
@@ -246,65 +198,9 @@ const useLeafletMap = () => {
         setEditedFeature(newFeature);
     }
 
-    /**
-     * Returns the last vertex in the polygon given.
-     * @param polygon The polygon on which to extract the last vertex.
-     * @param isRing True if the polygon given is an array of coordinates,
-     * and not an array of rings (rings are arrays of coordinates).
-     */
-    function getLastVertex (polygon, isRing) {
-        if (isRing && polygon.length > 0) {
-            return polygon.at(-1);
-        }
-        else if (!isRing && polygon.length > 0) {
-            return polygon[0].at(-1);
-        }
-        return undefined;
-    }
-
-    /**
-     * An element that controls user input to the leaflet map.
-     */
-    function LeafletEditInteraction () {
-        const map = useMapEvents({
-            click: () => {
-                if (editedFeatureIndex !== null) {
-                    if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
-                        if (finishVertex) {
-                            setEditorSelectedTool(null);
-                        }
-                        else {
-                            const updatedFeature = { ...editedFeature };
-                            updatedFeature.polygons[editedFeatureSubpolygonIndex][0].push(editMarkerCoords);
-                            setEditedFeature(updatedFeature);
-                        }
-                    }
-                    else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.cut) {
-                        // logic to cut stuff.
-                    }
-                }
-            },
-            mousemove: e => {
-                if (editedFeatureIndex !== null) {
-                    console.log("moving");
-                    setEditMarkerCoords(e.latlng);
-                }
-            }
-        });
-    
-        return null;
-    }
-
     return {
         builtMap,
         setBuiltMap,
-        /**
-         * Stores all the Leaflet objects needed to draw the Polygons
-         * in the document as they need to be drawn.
-         */
-        $drawablePolygons,
-        getEnabledPolygons,
-        LeafletEditInteraction,
     }
 }
 

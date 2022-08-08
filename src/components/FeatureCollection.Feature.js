@@ -4,7 +4,7 @@ import Switch from '../elements/Switch';
 import DormantTextbox from '../elements/DormantTextbox';
 import Button from '../elements/Button';
 import { toHaveFormValues } from '@testing-library/jest-dom/dist/matchers';
-import Helpers from '../logic/Helpers';
+import DocumentHelper from '../helpers/DocumentHelper';
 import { useUIContext } from '../logic/useUIContext';
 
 function FeatureCollection_Feature(props) {
@@ -61,16 +61,16 @@ function FeatureCollection_Feature(props) {
 }
 
 function copyFeature (geojson) {
-    Helpers.copyToClipboard(encodedGeojson(geojson));
+    DocumentHelper.copyToClipboard(encodedGeojson(geojson));
 }
 
 function exportFeature (fileName, geojson) {
-    Helpers.saveAsFile(`${fileName}.geojson`, encodedGeojson(geojson));
+    DocumentHelper.saveAsFile(`${fileName}.geojson`, encodedGeojson(geojson));
 }
 
 function encodedGeojson (geojson) {
     const rawJson = JSON.stringify(geojson, null, 4);
-    return Helpers.formatGeojsonCoords(rawJson);
+    return DocumentHelper.formatGeojsonCoords(rawJson);
 }
 
 export default FeatureCollection_Feature;

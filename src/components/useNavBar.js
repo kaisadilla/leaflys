@@ -1,5 +1,5 @@
 import fileDialog from "file-dialog";
-import Helpers from "../logic/Helpers";
+import DocumentHelper from "../helpers/DocumentHelper";
 import { useDocumentContext } from "../logic/useDocumentContext";
 
 const useNavBar = () => {
@@ -16,8 +16,9 @@ const useNavBar = () => {
                 const txt = e.target.result;
                 const newDocument = JSON.parse(txt);
                 setDocument(newDocument);
-                console.log("Loaded new document:");
-                console.log(newDocument);
+                
+                console.info("[DEBUG] Loaded new document:");
+                console.info(newDocument);
             };
         });
     }
@@ -27,7 +28,7 @@ const useNavBar = () => {
      */
     function saveDocument () {
         const json = JSON.stringify(document, null, 4);
-        Helpers.saveAsFile(`leaflys-document.json`, Helpers.formatGeojsonCoords(json));
+        DocumentHelper.saveAsFile(`leaflys-document.json`, DocumentHelper.formatGeojsonCoords(json));
     }
 
     return {

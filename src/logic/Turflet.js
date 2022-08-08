@@ -50,6 +50,17 @@ function polygon_leafletToGeojson (polygon) {
     return multiPolygon ? turf.multiPolygon(_shapes) : turf.polygon(_shapes[0]);
 }
 
+function coordArrayToObject (array) {
+    return {
+        lat: array[1],
+        lng: array[0],
+    };
+}
+
+function coordObjectToArray (object) {
+    return [object.lng, object.lat];
+}
+
 export const Turflet = {
     polygon: {
         /**
@@ -61,5 +72,17 @@ export const Turflet = {
          * automatically calculating whether it's a polygon or a multipolygon.
          */
         leafletToGeojson: polygon_leafletToGeojson,
+    },
+    coord: {
+        /**
+         * Takes a GeoJSON coordinate array and
+         * transforms it into a Leaflet coordinate object.
+         */
+        arrayToObject: coordArrayToObject,
+        /**
+         * Takes a Leaflet coordinate object and
+         * transforms it into a GeoJSON coordinate array.
+         */
+        objectToArray: coordObjectToArray,
     }
 };

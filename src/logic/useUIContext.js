@@ -54,6 +54,9 @@ export const UIContextProvider = ({ children }) => {
         editor: {
             selectedTool: null,
             selectedToolMode: null,
+            snap: true, // TODO: Dynamic.
+            showForeignShapes: true, // TODO: Dynamic
+            snapDistance: 25, // TODO: Dynamic.
         }
     });
 
@@ -128,6 +131,30 @@ export const UIContextProvider = ({ children }) => {
             }
         });
 
+        const setEditorSnap = active => setState({
+            ...state,
+            editor: {
+                ...state.editor,
+                snap: active,
+            }
+        });
+
+        const setEditorShowForeignShapes = active => setState({
+            ...state,
+            editor: {
+                ...state.editor,
+                showForeignShapes: active,
+            }
+        });
+
+        const setEditorSnapDistance = distance => setState({
+            ...state,
+            editor: {
+                ...state.editor,
+                snapDistance: distance,
+            }
+        });
+
         return {
             ...state,
             setShiftPressed,
@@ -138,6 +165,9 @@ export const UIContextProvider = ({ children }) => {
             setEditedFeature,
             setEditorSelectedTool,
             setEditorSelectedToolMode,
+            setEditorSnap,
+            setEditorShowForeignShapes,
+            setEditorSnapDistance,
         }
     }, [state]);
 

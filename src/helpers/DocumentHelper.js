@@ -108,7 +108,7 @@ function saveAsFile (fileName, content) {
     saveAs(blob, fileName);
 }
 
-const Helpers = {
+const DocumentHelper = {
     getTemplate: {
         blankDocument,
         document: exampleDocument,
@@ -124,4 +124,4 @@ const Helpers = {
     saveAsFile,
 };
 
-export default Helpers;
+export default DocumentHelper;
