@@ -20,6 +20,7 @@ const useLeafletMap = () => {
         editor,
         setEditedFeatureSubpolygonIndex,
         setEditedFeature,
+        setEditorSelectedTool,
     } = useUIContext();
     const { document } = useDocumentContext();
 
@@ -27,11 +28,16 @@ const useLeafletMap = () => {
     const [$drawablePolygons, setDrawablePolygons] = useState([]);
 
     /*** edit polygon mode ***/
+    /** stores the current coordinates of the marker that follows the mouse. */
     const [editMarkerCoords, setEditMarkerCoords] = useState([0, 0]);
     const [editCutPolygon, setEditCutPolygon] = useState([]);
 
-    // update the array of forms drawn to leaflet when a dependency in the array changes.
+    /** If true, adding the current vertex will finish the shape and deselect the current editing tool. */
+    let finishVertex = false;
+
+    // update the array of features drawn to leaflet when a dependency in the array changes.
     useEffect(() => {
+        console.log("Updating Leaflet features.");
         if (editedFeatureIndex === null) {
             const polys = getEnabledPolygons().map(p => <GeoJSON key={["edit", p.id]} data={p} />);
             setDrawablePolygons(polys);
@@ -51,7 +57,7 @@ const useLeafletMap = () => {
             const polys = [];
             setDrawablePolygons(polys);
         }
-    }, [document, editedFeatureIndex, editor.selectedTool]);
+    }, [editedFeatureIndex, editor.selectedTool, editMarkerCoords]);
 
     /**
      * Returns an array with the polygons in the document that are not disabled.
@@ -191,8 +197,6 @@ const useLeafletMap = () => {
 
                     const thisCoord = ring[c];
                     const lastCoord = c === "0" ? ring[ring.length - 1] : ring[c - 1];
-                    
-                    debugger;
 
                     _subpolys.push(
                         <Polyline key={["line", polygonIndex, r, c]} position={[lastCoord, thisCoord]} color />
@@ -242,11 +246,65 @@ const useLeafletMap = () => {
         setEditedFeature(newFeature);
     }
 
+    /**
+     * Returns the last vertex in the polygon given.
+     * @param polygon The polygon on which to extract the last vertex.
+     * @param isRing True if the polygon given is an array of coordinates,
+     * and not an array of rings (rings are arrays of coordinates).
+     */
+    function getLastVertex (polygon, isRing) {
+        if (isRing && polygon.length > 0) {
+            return polygon.at(-1);
+        }
+        else if (!isRing && polygon.length > 0) {
+            return polygon[0].at(-1);
+        }
+        return undefined;
+    }
+
+    /**
+     * An element that controls user input to the leaflet map.
+     */
+    function LeafletEditInteraction () {
+        const map = useMapEvents({
+            click: () => {
+                if (editedFeatureIndex !== null) {
+                    if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
+                        if (finishVertex) {
+                            setEditorSelectedTool(null);
+                        }
+                        else {
+                            const updatedFeature = { ...editedFeature };
+                            updatedFeature.polygons[editedFeatureSubpolygonIndex][0].push(editMarkerCoords);
+                            setEditedFeature(updatedFeature);
+                        }
+                    }
+                    else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.cut) {
+                        // logic to cut stuff.
+                    }
+                }
+            },
+            mousemove: e => {
+                if (editedFeatureIndex !== null) {
+                    console.log("moving");
+                    setEditMarkerCoords(e.latlng);
+                }
+            }
+        });
+    
+        return null;
+    }
+
     return {
         builtMap,
         setBuiltMap,
+        /**
+         * Stores all the Leaflet objects needed to draw the Polygons
+         * in the document as they need to be drawn.
+         */
         $drawablePolygons,
         getEnabledPolygons,
+        LeafletEditInteraction,
     }
 }
 

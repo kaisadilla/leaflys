@@ -43,6 +43,7 @@ export const useUIContext = () => useContext(UIContext);
 export const UIContextProvider = ({ children }) => {
     const [state, setState] = useState({
         specialKeys: {
+            shift: false,
             ctrl: false,
         },
         editorMode: EDITOR_MODES.mapEditor,
@@ -57,13 +58,20 @@ export const UIContextProvider = ({ children }) => {
     });
 
     const value = useMemo(() => {
+        const setShiftPressed = pressed => setState({
+            ...state,
+            specialKeys: {
+                ...state.specialKeys,
+                shift: pressed,
+            }
+        });
         const setCtrlPressed = pressed => setState({
             ...state,
             specialKeys: {
                 ...state.specialKeys,
                 ctrl: pressed,
             }
-        })
+        });
 
         const setEditorMode = mode => setState({
             ...state,
@@ -122,6 +130,7 @@ export const UIContextProvider = ({ children }) => {
 
         return {
             ...state,
+            setShiftPressed,
             setCtrlPressed,
             setEditorMode,
             setEditedFeatureIndex,

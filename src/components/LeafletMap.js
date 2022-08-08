@@ -5,11 +5,14 @@ import { DEFAULT_MAP_CENTER, DEFAULT_ZOOM } from '../global';
 import "leaflet/dist/leaflet.css";
 import useLeafletMap from './useLeafletMap';
 import { useUIContext } from '../logic/useUIContext';
+import LeafletElementContainer from './LeafletElementContainer';
 
 function LeafletMap (props) {
+    console.log("Leaflet rerender!");
     const {
         setBuiltMap,
         $drawablePolygons,
+        LeafletEditInteraction,
     } = useLeafletMap();
 
     const { editedFeature } = useUIContext();
@@ -35,18 +38,11 @@ function LeafletMap (props) {
                     />
                 </LayersControl.BaseLayer>
             </LayersControl>
+            <LeafletElementContainer />
             {$drawablePolygons}
             {editedFeature !== null && <LeafletEditInteraction />}
         </MapContainer>
     );
-}
-
-function LeafletEditInteraction () {
-    const map = useMapEvents({
-        click: () => console.log("I was clicked")
-    });
-
-    return null;
 }
 
 export default LeafletMap;
