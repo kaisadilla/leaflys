@@ -25,7 +25,7 @@ const useLeafletElementContainer = () => {
         iconSize: 12 * 0.625
     }); // TODO: Dynamic
 
-    const { document, forceReloadFlag } = useDocumentContext();
+    const { document, forceReloadFlag, forceRedraw } = useDocumentContext();
 
     const {
         specialKeys,
@@ -57,12 +57,12 @@ const useLeafletElementContainer = () => {
     useEffect(() => {
         console.info("[DEBUG] Background polygons rerendered.");
         buildBackgroundPolygonObjects();
-    }, [forceReloadFlag, editedFeatureIndex]);
+    }, [forceReloadFlag, forceRedraw, editedFeatureIndex,]);
 
     useEffect(() => {
         console.info("[DEBUG] Edited polygon rerendered.");
         buildEditedPolygonObjects();
-    }, [forceReloadFlag, editedFeatureIndex, editMarkerCoords, editor.selectedTool]);
+    }, [forceReloadFlag, forceRedraw, editedFeatureIndex, editMarkerCoords, editor.selectedTool]);
 
     useEffect(() => {
         if (editedFeatureIndex !== null) {

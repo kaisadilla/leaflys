@@ -11,6 +11,7 @@ export const DocumentContextProvider = ({ children }) => {
          * useEffect statements can subscribe to this flag to update when the document
          * is substantially changed (e.g. when loading a new document). */
         forceReloadFlag: false,
+        forceRedrawFlag: false,
     });
 
     const value = useMemo(() => {
@@ -23,6 +24,7 @@ export const DocumentContextProvider = ({ children }) => {
                 ...state,
                 document: document,
                 forceReloadFlag: !state.forceReloadFlag,
+                forceRedrawFlag: !state.forceRedrawFlag,
             });
         }
 
@@ -37,7 +39,10 @@ export const DocumentContextProvider = ({ children }) => {
             const newState = structuredClone(state);
             newState.document.features.polygons.push(newFeature);
 
-            setState(newState);
+            setState({
+                ...newState,
+                forceReloadFlag: !state.forceReloadFlag
+            });
         }
         /**
          * Replaces the polygon at the index given with the one given.
@@ -48,7 +53,10 @@ export const DocumentContextProvider = ({ children }) => {
             const newState = structuredClone(state);
             newState.document.features.polygons[index] = polygon;
 
-            setState(newState);
+            setState({
+                ...newState,
+                forceReloadFlag: !state.forceReloadFlag
+            });
         }
 
         /**
@@ -90,7 +98,10 @@ export const DocumentContextProvider = ({ children }) => {
                 }
             }
 
-            setState(newState);
+            setState({
+                ...newState,
+                forceReloadFlag: !state.forceReloadFlag
+            });
         }
 
         return {
