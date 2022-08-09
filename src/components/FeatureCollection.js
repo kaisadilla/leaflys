@@ -1,16 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../elements/Button';
 import { useDocumentContext } from '../logic/useDocumentContext';
 import FeatureCollection_Feature from './FeatureCollection.Feature';
 
 function FeatureCollection (props) {
     const { document, addNewPolygon } = useDocumentContext();
+    const [isGroupEnabled, setGroupEnabled] = useState(true);
 
-    const addFeatureToCategory = () => {
-        addNewPolygon("New shape", props.categoryFilter[0], crypto.randomUUID());
-    }
-
-    const $features = document.features.polygons.map((p, i) => {
+    const featuresContained = document.features.polygons.filter((p, i) => {
         // true if this feature is excluded by the type filter.
         const filteredOutByType = props.typeFilter &&
                                   Array.isArray(props.typeFilter) &&
@@ -20,14 +17,23 @@ function FeatureCollection (props) {
                                       Array.isArray(props.categoryFilter) &&
                                       !props.categoryFilter.includes(p.properties.category);
         
-        if (!filteredOutByType && !filteredOutByCategory) {
-            return (
-                <FeatureCollection.Feature key={p.id} index={i} feature={p} />
-            );
-        }
-        else {
-            return <></>
-        }
+        return !filteredOutByType && !filteredOutByCategory;
+    });
+
+    const addFeatureToCategory = () => {
+        addNewPolygon("New shape", props.categoryFilter[0], crypto.randomUUID());
+    }
+
+    useEffect(() => {
+        const enabledCount = featuresContained.filter(f => {
+            return f.properties.leaflys?.enabled ?? true;
+        }).length;
+
+        setGroupEnabled(enabledCount !== featuresContained.length);
+    }, [featuresContained]);
+
+    const $features = featuresContained.map((p, i) => {
+        return <FeatureCollection.Feature key={p.id} index={i} feature={p} />
     });
 
     return (

@@ -56,7 +56,7 @@ function examplePolygon () {
 
 function templatePolygonSettings () {
     return {
-        "disabled": false,
+        "enabled": true,
     };
 }
 

@@ -25,6 +25,7 @@ export const DocumentContextProvider = ({ children }) => {
                 forceReloadFlag: !state.forceReloadFlag,
             });
         }
+
         /**
          * Creates a new polygon with the info given, and adds it to the polygon array.
          * @param {*} name The name for the polygon.
@@ -33,7 +34,7 @@ export const DocumentContextProvider = ({ children }) => {
          */
         const addNewPolygon = (name, category, id) => {
             const newFeature = DocumentHelper.getNew.polygon(name, category, id);
-            const newState = { ...state };
+            const newState = structuredClone(state);
             newState.document.features.polygons.push(newFeature);
 
             setState(newState);
@@ -43,9 +44,51 @@ export const DocumentContextProvider = ({ children }) => {
          * @param {*} index The index of the polygon in the document's polygon array.
          * @param {*} polygon Ab oject containing a polygon (or multipolygon).
          */
-        const replacePolygonAt = (index, polygon) => {
-            const newState = { ...state }
+        const updatePolygonAt = (index, polygon) => {
+            const newState = structuredClone(state);
             newState.document.features.polygons[index] = polygon;
+
+            setState(newState);
+        }
+
+        /**
+         * Returns true only if all features in a section is enabled.
+         * If "null" is passed as section, all features in the document will be counted.
+         * @param {*} type The type of feature to check.
+         * @param {*} section The section of the features. If this equals "null",
+         * all section will be counted as one.
+         */
+        const isCategoryEnabled = (type, section) => {
+            let features = state.document.features[type];
+            // if a category is given, only count features from that section.
+            if (section) {
+                features = features.filter(f => {
+                    return f.properties.category === section;
+                });
+            }
+
+            const enabledCount = features.filter(f => {
+                return f.properties.leaflys?.enabled ?? true;
+            }).length;
+
+            return enabledCount === features.length;
+        }
+
+        /**
+         * Sets all features of a type in a section as enabled or disabled.
+         * @param {*} type The type of feature.
+         * @param {*} section The section for the feature. Use "null" to
+         * enable or disable ALL features regardless of their section.
+         * @param {*} enabled True if enabled, false if enabled.
+         */
+        const setCategoryEnabled = (type, section, enabled) => {
+            const newState = structuredClone(state);
+
+            for (const f of newState.document.features[type]) {
+                if (!section || f.properties.category === section) {
+                    f.properties.leaflys.enabled = enabled;
+                }
+            }
 
             setState(newState);
         }
@@ -54,7 +97,9 @@ export const DocumentContextProvider = ({ children }) => {
             ...state,
             setDocument,
             addNewPolygon,
-            replacePolygonAt
+            updatePolygonAt,
+            isCategoryEnabled,
+            setCategoryEnabled,
         }
     }, [state]);
 

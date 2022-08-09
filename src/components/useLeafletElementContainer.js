@@ -193,11 +193,11 @@ const useLeafletElementContainer = () => {
     }
 
     /**
-     * Returns an array with the polygons in the document that are not disabled.
+     * Returns an array with the polygons in the document that are enabled.
      */
     function getEnabledPolygons () {
         return document.features.polygons.filter(p => (
-            p.properties.leaflys?.disabled === undefined || !p.properties.leaflys.disabled
+            p.properties.leaflys?.enabled ?? true
         ));
     }
 

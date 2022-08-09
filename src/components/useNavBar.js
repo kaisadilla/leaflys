@@ -1,5 +1,7 @@
 import fileDialog from "file-dialog";
+import { CURRENT_DOCUMENT_VERSION } from "../global";
 import DocumentHelper from "../helpers/DocumentHelper";
+import updateDocument from "../logic/updateDocument";
 import { useDocumentContext } from "../logic/useDocumentContext";
 
 const useNavBar = () => {
@@ -15,6 +17,7 @@ const useNavBar = () => {
             reader.onload = e => {
                 const txt = e.target.result;
                 const newDocument = JSON.parse(txt);
+                updateDocument(newDocument);
                 setDocument(newDocument);
                 
                 console.info("[DEBUG] Loaded new document:");

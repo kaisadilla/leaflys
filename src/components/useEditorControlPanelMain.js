@@ -1,7 +1,20 @@
+import { useEffect, useState } from "react";
 import { useDocumentContext } from "../logic/useDocumentContext";
 
 const useEditorControlPanel = () => {
-    const { document } = useDocumentContext();
+    const { document, isCategoryEnabled } = useDocumentContext();
+
+    const [isPolygonSectionEnabled, setPolygonSectionEnabled] = useState(true);
+    const [isPolygonCategoryEnabled, setPolygonCategoryEnabled] = useState([]);
+
+    useEffect(() => {
+        setPolygonSectionEnabled(() => isCategoryEnabled("polygons", null));
+        
+        const enabledCats = getPolygonCategories().map(c => {
+            return isCategoryEnabled("polygons", c);
+        });
+        setPolygonCategoryEnabled(enabledCats);
+    }, [document.features.polygons]);
 
     /**
      * Returns an array containing all the different categories
@@ -19,6 +32,8 @@ const useEditorControlPanel = () => {
     }
 
     return {
+        isPolygonSectionEnabled,
+        isPolygonCategoryEnabled,
         getPolygonCategories,
     }
 }
