@@ -13,18 +13,6 @@ import { MathHelper } from "../helpers/MathHelper";
 import { Turflet } from "../logic/Turflet";
 
 const useLeafletElementContainer = () => {
-    const ICON_EDIT_VERTICES = L.divIcon({
-        className: "leaflet-bullet-marker edit-layer-marker-vertex",
-        iconSize: 12
-    }); // TODO: Dynamic.
-    const ICON_EDIT_POINTER = L.divIcon({
-        className: "leaflet-bullet-marker edit-layer-marker-add"
-    });
-    const ICON_EDIT_VERTEX_MIDPOINT = L.divIcon({
-        className: "leaflet-bullet-marker edit-layer-marker-vertex",
-        iconSize: 12 * 0.625
-    }); // TODO: Dynamic
-
     const { document, forceReloadFlag, forceRedraw } = useDocumentContext();
 
     const {
@@ -38,6 +26,18 @@ const useLeafletElementContainer = () => {
         setEditorSelectedTool,
     } = useUIContext();
 
+    const ICON_EDIT_VERTICES = L.divIcon({
+        className: "leaflet-bullet-marker edit-layer-marker-vertex",
+        iconSize: [editor.markerSize, editor.markerSize]
+    }); // TODO: Dynamic.
+    const ICON_EDIT_POINTER = L.divIcon({
+        className: "leaflet-bullet-marker edit-layer-marker-add"
+    });
+    const ICON_EDIT_VERTEX_MIDPOINT = L.divIcon({
+        className: "leaflet-bullet-marker edit-layer-marker-vertex",
+        iconSize: [editor.markerSize * 0.625, editor.markerSize * 0.625]
+    }); // TODO: Dynamic
+
     /*** leaflet map and elements drawn to it. */
     const [map, setMap] = useState(null);
     const [$backgroundPolygons, setBackgroundPolygons] = useState([]);
@@ -50,6 +50,8 @@ const useLeafletElementContainer = () => {
     const [editSnapVertices, setEditSnapVertices] = useState([]);
     const [editSnapRings, setEditSnapRings] = useState([]);
     const [editCutPolygon, setEditCutPolygon] = useState([]);
+    /** a flag to update when the user edits the polygon in a way that requires a rerender. */
+    const [editPolygonFlag, setEditPolygonFlag] = useState(false);
     
     /** If true, adding the current vertex will finish the shape and deselect the current editing tool. */
     let finishingVertex = false;
@@ -57,12 +59,19 @@ const useLeafletElementContainer = () => {
     useEffect(() => {
         console.info("[DEBUG] Background polygons rerendered.");
         buildBackgroundPolygonObjects();
-    }, [forceReloadFlag, forceRedraw, editedFeatureIndex,]);
+    }, [forceReloadFlag, forceRedraw, editedFeatureIndex]);
 
     useEffect(() => {
         console.info("[DEBUG] Edited polygon rerendered.");
         buildEditedPolygonObjects();
-    }, [forceReloadFlag, forceRedraw, editedFeatureIndex, editMarkerCoords, editor.selectedTool]);
+    }, [
+        forceReloadFlag,
+        forceRedraw,
+        editedFeatureIndex,
+        editor.selectedTool === POLYGON_EDITOR_TOOLS.edit ? false : editMarkerCoords,
+        editor.selectedTool,
+        editPolygonFlag,
+    ]);
 
     useEffect(() => {
         if (editedFeatureIndex !== null) {
@@ -116,6 +125,9 @@ const useLeafletElementContainer = () => {
                     if (i === editedFeatureSubpolygonIndex) {
                         if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
                             subpolys.push(buildPolygon_draw(editedFeature.polygons[i], i, key, activeColor));
+                        }
+                        if (editor.selectedTool === POLYGON_EDITOR_TOOLS.edit) {
+                            subpolys.push(buildPolygon_edit(editedFeature.polygons[i], i, key, activeColor));
                         }
                         else {
                             subpolys.push(buildPolygon_normal(editedFeature.polygons[i], i, key, activeColor));
@@ -188,6 +200,78 @@ const useLeafletElementContainer = () => {
                 }
             </Marker>
         );
+
+        return _leafletFeatures;
+    }
+
+    function buildPolygon_edit (polygon, polygonIndex, key, color) {
+        const _leafletFeatures = [];
+
+        if (polygon[0].length > 0) {
+            for (const r in polygon) {
+                const ring = polygon[r];
+                
+                for (const c in ring) {
+                    const dragVertex = {
+                        dragend: e => {
+                            _replaceVertexAt(c, e.target._latlng);
+                            setEditPolygonFlag(!editPolygonFlag);
+                        }
+                    }
+                    
+                    _leafletFeatures.push(
+                        <Marker
+                            key={["marker", polygonIndex, r, c]}
+                            position={ring[c]}
+                            icon={ICON_EDIT_VERTICES}
+                            eventHandlers={dragVertex}
+                            draggable={true}
+                        />
+                    );
+
+                    const thisRing = ring[c];
+                    const lastRing = c === "0" ? ring[ring.length - 1] : ring[c - 1];
+
+                    _leafletFeatures.push(
+                        <Polyline
+                            key={["line", polygonIndex, r, c]}
+                            positions={[lastRing, thisRing]}
+                            color={color}
+                        />
+                    );
+
+                    const lMidPoint = {
+                        lat: (0.5 * lastRing.lat) + (0.5 * thisRing.lat),
+                        lng: (0.5 * lastRing.lng) + (0.5 * thisRing.lng)
+                    }
+
+                    const addVertex = {
+                        click: e => {
+                            _insertVertexAt(c, lMidPoint);
+                            setEditPolygonFlag(!editPolygonFlag);
+                        }
+                    }
+
+                    _leafletFeatures.push(
+                        <Marker
+                            key={["marker-add", polygonIndex, r, c]}
+                            position={lMidPoint}
+                            icon={ICON_EDIT_VERTEX_MIDPOINT}
+                            eventHandlers={addVertex}
+                        />
+                    );
+                }
+            }
+
+            _leafletFeatures.push(
+                <Polygon
+                    key={[key, polygon[0].length, "polygon", editPolygonFlag]}
+                    positions={polygon}
+                    color={color}
+                    stroke={false}
+                />
+            );
+        }
 
         return _leafletFeatures;
     }
@@ -281,6 +365,18 @@ const useLeafletElementContainer = () => {
         return foreignRings;
     }
 
+    function _insertVertexAt (index, vertex) {
+        const newFeature = { ...editedFeature };
+        newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 0, vertex);
+        setEditedFeature(newFeature);
+    }
+
+    function _replaceVertexAt (index, vertex) {
+        const newFeature = { ...editedFeature };
+        newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 1, vertex);
+        setEditedFeature(newFeature);
+    }
+
     /**
      * An element that controls user input to the leaflet map.
      */
@@ -366,7 +462,7 @@ const useLeafletElementContainer = () => {
 
                 // if shapes are enabled, snapping is enabled, and the marker
                 // isn't already set to close.
-                if (!markerPos && editor.snap && editor.showForeignShapes) {
+                if (!markerPos && editor.snap && editor.showForeignFeatures) {
                     const turfCursor = turf.point([e.latlng.lng, e.latlng.lat]);
                     const nearestPoint = turf.nearest(turfCursor, editSnapVertices);
 

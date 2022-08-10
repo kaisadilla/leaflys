@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { toHaveFormValues } from '@testing-library/jest-dom/dist/matchers';
 import SpanButton from '../elements/SpanButton';
 import Switch from '../elements/Switch';
@@ -7,12 +7,13 @@ import Button from '../elements/Button';
 import DocumentHelper from '../helpers/DocumentHelper';
 import { useUIContext } from '../logic/useUIContext';
 import { useDocumentContext } from '../logic/useDocumentContext';
+import ConfirmDialog from '../elements/ConfirmDialog';
 
 function FeatureCollection_Feature(props) {
-    const { updatePolygonAt } = useDocumentContext();
+    const { updatePolygon, deletePolygonAt } = useDocumentContext();
     const { setEditedFeatureIndex } = useUIContext();
 
-    const [enabled, setEnabled] = useState(true);
+    const [dialogDelete, setDialogDelete] = useState(false);
 
     const feature = props.feature;
     const index = props.index;
@@ -21,23 +22,26 @@ function FeatureCollection_Feature(props) {
     const id = feature.id;
 
     const empty = feature.geometry.coordinates.length === 0 || feature.geometry.coordinates[0].length === 0;
+    const [enabled, setEnabled] = useState(true);
 
     const editButton = () => setEditedFeatureIndex(index, feature);
+    const deleteButton = () => setDialogDelete(true);
     const copyButton = () => copyFeature(feature);
     const exportButton = () => exportFeature(name, feature);
 
     const evt_toggleFeature = (e) => {
         const newFeature = structuredClone(feature);
         newFeature.properties.leaflys.enabled = e.target.checked;
-        updatePolygonAt(index, newFeature);
+        updatePolygon(id, newFeature);
     };
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         console.log("USE EFFECT TRIGGERED!");
         setEnabled(feature.properties.leaflys ? feature.properties.leaflys.enabled : true);
     }, [feature]);
-
+    
     return (
+        <>
         <div className={`feature ${enabled ? "" : "disabled-feature"}`}>
             <div className="feature-row name-row">
                 <Switch className="toggle-feature"
@@ -55,14 +59,14 @@ function FeatureCollection_Feature(props) {
                     enabled ?
                     <div className="feature-buttons">
                         <Button baseStyle="clear" icon="edit" iconStyle="g-outline" onClick={editButton} />
-                        <Button baseStyle="danger" icon="delete" iconStyle="g-outline" />
+                        <Button baseStyle="danger" icon="delete" iconStyle="g-outline" onClick={deleteButton} />
                     </div> :
                     <div className="feature-buttons-placeholder"></div>
                 }
             </div>
             {
                 enabled &&
-                <div className="feature-row">
+                <div className="feature-row id-row">
                     <div className="feature-id">{id}</div>
                     <div className="feature-quick-actions">
                         <SpanButton label="copy" onClick={copyButton} />
@@ -74,6 +78,16 @@ function FeatureCollection_Feature(props) {
                 </div>
             }
         </div>
+        <ConfirmDialog
+            isOpen={dialogDelete}
+            title="Delete feature"
+            messageHTML={<span>Do you want to delete <b>{name}</b>?</span>}
+            confirm={() => deletePolygonAt(index)}
+            confirmLabel="Delete"
+            confirmStyle="danger"
+            close={() => setDialogDelete(false)}
+        />
+        </>
     );
 }
 

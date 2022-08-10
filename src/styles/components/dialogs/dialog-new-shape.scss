@@ -1,0 +1,34 @@
+
+.dialog-new-shape {
+    @include no-select();
+    
+    .properties {
+        padding: 0 8px;
+        .property {
+            display: flex;
+            margin: 6px 0;
+            width: 442px;
+            > :first-child {
+                width: 120px;
+            }
+        }
+        .property-id {
+            display: flex;
+            width: 100%;
+            > :first-child {
+                width: 100%;
+                margin: 0;
+            }
+            > :last-child {
+                width: 20px;
+            }
+        }
+        .reroll-icon {
+            > span {
+                font-size: 16pt;
+                height: 20px;
+                display: block;
+            }
+        }
+    }
+}

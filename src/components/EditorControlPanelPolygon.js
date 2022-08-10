@@ -11,7 +11,7 @@ import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '.
 import { Turflet } from '../logic/Turflet';
 
 function EditorControlPanelPolygon (props) {
-    const { document, replacePolygonAt } = useDocumentContext();
+    const { document, updatePolygon } = useDocumentContext();
     const {
         editedFeatureIndex,
         editedFeatureSubpolygonIndex,
@@ -21,7 +21,12 @@ function EditorControlPanelPolygon (props) {
         setEditedFeatureSubpolygonIndex,
         setEditedFeature,
         setEditorSelectedTool,
-        setEditorSelectedToolMode
+        setEditorSelectedToolMode,
+        setEditorSnap,
+        setEditorShowForeignFeatures,
+        setEditorSnapDistance,
+        setEditorMarkerSize,
+        setEditorPencilStep,
     } = useUIContext();
 
     const $subPolygons = editedFeature.polygons.map((p, i) => (
@@ -47,7 +52,7 @@ function EditorControlPanelPolygon (props) {
         newFeature.geometry.type = geojson.geometry.type;
         newFeature.geometry.coordinates = geojson.geometry.coordinates;
 
-        replacePolygonAt(editedFeatureIndex, newFeature);
+        updatePolygon(editedFeature.originalId, newFeature);
         setEditedFeatureIndex(null);
     };
     const evt_nameTextbox = (evt) => {
@@ -68,6 +73,11 @@ function EditorControlPanelPolygon (props) {
             id: evt.target.value,
         })
     };
+    const evt_snap = (evt) => setEditorSnap(evt.target.checked);
+    const evt_foreignFeatures = (evt) => setEditorShowForeignFeatures(evt.target.checked);
+    const evt_snapDistance = (evt) => setEditorSnapDistance(parseFloat(evt.target.value));
+    const evt_markerSize = (evt) => setEditorMarkerSize(parseFloat(evt.target.value));
+    const evt_pencilStep = (evt) => setEditorPencilStep(parseFloat(evt.target.value));
     // #endregion
 
     return (
@@ -83,7 +93,7 @@ function EditorControlPanelPolygon (props) {
                 <div className="shadow-border" />
             </div>
             <div className="control-panel control-panel-edit">
-                <h2>Properties</h2>
+                <h2 class="control-panel-header">Properties</h2>
                 <div className="properties control-table">
                     <InputCombo className="pair">
                         <label htmlFor="feature-name">Name</label>
@@ -98,8 +108,8 @@ function EditorControlPanelPolygon (props) {
                         <Textbox id="feature-id" value={editedFeature.id} onChange={evt_idTextbox} />
                     </InputCombo>
                 </div>
+                <h2 class="control-panel-header">{editedFeatureIndex.length > 1 ? "Polygons (MultiPolygon)" : "Polygons"}</h2>
                 <div className="polygon-selector">
-                    <h2>{editedFeatureIndex.length > 1 ? "Polygons (MultiPolygon)" : "Polygons"}</h2>
                     <div className="polygon-gallery">
                         {$subPolygons}
                         <Button baseStyle="success" label="+" />
@@ -107,7 +117,7 @@ function EditorControlPanelPolygon (props) {
                 </div>
                 <div className="tools-and-actions">
                     <div className="tools">
-                        <h2>Tools</h2>
+                        <h2 class="control-panel-header">Tools</h2>
                         <div className="control-collection">
                             <Button
                                 icon="mode_edit" iconStyle="g-outline" title="Draw shape"
@@ -129,21 +139,26 @@ function EditorControlPanelPolygon (props) {
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.eraser}
                             />
                             <Button
-                                icon="open_with" iconStyle="g-round" title="Move shape" disabled
+                                icon="open_with" iconStyle="g-round" title="Move shape (not available)" disabled
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.move)}
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.move}
                             />
+                            <Button
+                                icon="fa-bullseye-pointer" iconStyle="fad" title="Select starting point"
+                                onClick={() => setTool(POLYGON_EDITOR_TOOLS.selectStart)}
+                                selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart}
+                            />
                         </div>
                     </div>
-                    <div className="actions">
-                        <h2>Actions</h2>
+                    <div className="actions" style={{maxWidth: "82px"}}>
+                        <h2 class="control-panel-header">Actions</h2>
                         <div className="control-collection">
                             <Button icon="undo" iconStyle="g-round" disabled />
                             <Button icon="redo" iconStyle="g-round" disabled />
                         </div>
                     </div>
-                    <div className="edit-mode">
-                        <h2>Edit mode</h2>
+                    <div className="edit-mode" style={{maxWidth: "126px"}}>
+                        <h2 class="control-panel-header">Edit mode</h2>
                         <div className="control-collection">
                             <Button
                                 icon="fa-map-pin" iconStyle="fad" title="Place points"
@@ -163,29 +178,56 @@ function EditorControlPanelPolygon (props) {
                         </div>
                     </div>
                 </div>
+                <h2 class="control-panel-header">Options</h2>
                 <div className="options">
-                    <h2>Options</h2>
-                    <Checkbox id="snap-borders" label="Snap to nearby polygons." defaultchecked />
-                    <Checkbox id="show-others" label="Show other polygons." defaultchecked />
+                    <Checkbox
+                        id="snap-borders"
+                        label="Snap to nearby polygons."
+                        checked={editor.snap}
+                        onChange={evt_snap}
+                        highlight
+                    />
+                    <Checkbox
+                        id="show-others"
+                        label="Show other polygons."
+                        checked={editor.showForeignFeatures}
+                        onChange={evt_foreignFeatures}
+                        highlight
+                    />
                     <div className="control-table">
                         <InputCombo className="option-slider pair">
                             <label htmlFor="snap-distance">Snap distance</label>
-                            <Slider id="snap-distance" {...POLYGON_EDITOR_SNAP_DISTANCE} value={25} />
+                            <Slider
+                                id="snap-distance"
+                                {...POLYGON_EDITOR_SNAP_DISTANCE}
+                                value={editor.snapDistance}
+                                onChange={evt_snapDistance}
+                            />
                         </InputCombo>
                         <InputCombo className="option-slider pair">
                             <label htmlFor="marker-size">Marker size</label>
-                            <Slider id="marker-size" {...POLYGON_EDITOR_MARKER_SIZE} value={12} />
+                            <Slider
+                                id="marker-size"
+                                {...POLYGON_EDITOR_MARKER_SIZE}
+                                value={editor.markerSize}
+                                onChange={evt_markerSize}
+                            />
                         </InputCombo>
                         <InputCombo className="option-slider pair">
                             <label htmlFor="pencil-step">Pencil step</label>
-                            <Slider id="pencil-step" {...POLYGON_EDITOR_PENCIL_STEP} value={40} />
+                            <Slider
+                                id="pencil-step"
+                                {...POLYGON_EDITOR_PENCIL_STEP}
+                                value={editor.pencilStep}
+                                onChange={evt_pencilStep}
+                            />
                         </InputCombo>
                     </div>
                     <div className="options-control-bar">
                         <Button baseStyle="danger" label="Reset options" />
                     </div>
                 </div>
-                <h2>Data</h2>
+                <h2 class="control-panel-header">Data</h2>
                 <div className="data">
                     <div className="data-piece">
                         <span className="name">Area: </span>
@@ -196,12 +238,12 @@ function EditorControlPanelPolygon (props) {
                         <span className="value">{73} vertices</span>
                     </div>
                 </div>
-                <h2>TO-DO</h2>
-                <div className="todo">
-                    <div>- Remove placeholder data from Data section and replace it with real data.</div>
-                    <div>- Count how many vertices the shape has, with an option to reduce them.</div>
-                    <div>- Handle the error that occurs when saving a Polygon with less than 4 Positions.</div>
-                </div>
+                <h2 class="control-panel-header">TO-DO</h2>
+                <ul className="todo" style={{textAlign: "left"}}>
+                    <li>Remove placeholder data from Data section and replace it with real data.</li>
+                    <li>Count how many vertices the shape has, with an option to reduce them.</li>
+                    <li>Handle the error that occurs when saving a Polygon with less than 4 Positions.</li>
+                </ul>
             </div>
         </div>
     );

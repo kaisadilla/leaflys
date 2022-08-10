@@ -41,23 +41,40 @@ export const DocumentContextProvider = ({ children }) => {
 
             setState({
                 ...newState,
-                forceReloadFlag: !state.forceReloadFlag
+                forceReloadFlag: !state.forceReloadFlag,
             });
-        }
+        };
+
         /**
          * Replaces the polygon at the index given with the one given.
          * @param {*} index The index of the polygon in the document's polygon array.
          * @param {*} polygon Ab oject containing a polygon (or multipolygon).
          */
-        const updatePolygonAt = (index, polygon) => {
+        const updatePolygon = (id, polygon) => {
             const newState = structuredClone(state);
+            const index = newState.document.features.polygons.findIndex(p => p.id === id);
             newState.document.features.polygons[index] = polygon;
 
             setState({
                 ...newState,
-                forceReloadFlag: !state.forceReloadFlag
+                forceReloadFlag: !state.forceReloadFlag,
             });
-        }
+        };
+
+        /**
+         * Deletes the polygon at the index given.
+         * @param {*} index The index of the polygon in the document's polygon array.
+         */
+        const deletePolygon = (id) => {
+            const newState = structuredClone(state);
+            const index = newState.document.features.polygons.findIndex(p => p.id === id);
+            newState.document.features.polygons.splice(index, 1);
+
+            setState({
+                ...newState,
+                forceReloadFlag: !state.forceReloadFlag,
+            });
+        };
 
         /**
          * Returns true only if all features in a section is enabled.
@@ -108,7 +125,8 @@ export const DocumentContextProvider = ({ children }) => {
             ...state,
             setDocument,
             addNewPolygon,
-            updatePolygonAt,
+            updatePolygon,
+            deletePolygon,
             isCategoryEnabled,
             setCategoryEnabled,
         }
@@ -128,4 +146,16 @@ export const DocumentContextProvider = ({ children }) => {
 function getInitialDocument () {
     // TODO: Read local storage.
     return DocumentHelper.getTemplate.document();
+}
+
+/**
+ * Returns the position in the array of the feature with the given id.
+ * @param {*} featureArray An array of features.
+ * @param {*} id The id of the feature.
+ * @deprecated almost instantly
+ */
+function _findFeatureById (featureArray, id) {
+    //return featureArray.some((p, i) => {
+    //    return p.id === id ? i : false;
+    //})
 }

@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { LayersControl, TileLayer, useMap } from 'react-leaflet';
+import { CircleMarker, LayersControl, Marker, TileLayer, useMap } from 'react-leaflet';
 import useLeafletMap from './useLeafletMap';
 import { useUIContext } from '../logic/useUIContext';
 import useLeafletElementContainer from './useLeafletElementContainer';
+import L from "leaflet";
 
 function LeafletElementContainer (props) {
     const map = useMap();
@@ -24,6 +25,11 @@ function LeafletElementContainer (props) {
     useEffect(() => {
         setMap(map);
     }, []);
+
+    const ICON_EDIT_VERTICES = () => L.divIcon({
+        className: "leaflet-bullet-marker edit-layer-marker-vertex",
+        iconSize: 12
+    }); // TODO: Dynamic.
 
     return (
         <>

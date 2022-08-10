@@ -17,6 +17,7 @@ export const POLYGON_EDITOR_TOOLS = {
     cut: 2,
     eraser: 3,
     move: 4,
+    selectStart: 5,
 }
 
 export const POLYGON_EDITOR_TOOL_MODES = {
@@ -33,6 +34,8 @@ function getEditedFeatureObject (feature) {
         name: feature.properties.name,
         category: feature.properties.category,
         id: feature.id,
+        /** used to identify the feature in the document even if the user edits its id. */
+        originalId: feature.id,
         polygons: Turflet.polygon.geojsonToLeaflet(feature),
     };
 }
@@ -54,9 +57,11 @@ export const UIContextProvider = ({ children }) => {
         editor: {
             selectedTool: null,
             selectedToolMode: null,
-            snap: true, // TODO: Dynamic.
-            showForeignShapes: true, // TODO: Dynamic
-            snapDistance: 25, // TODO: Dynamic.
+            snap: true,
+            showForeignFeatures: true,
+            snapDistance: 25,
+            markerSize: 12,
+            pencilStep: 40,
         }
     });
 
@@ -139,11 +144,11 @@ export const UIContextProvider = ({ children }) => {
             }
         });
 
-        const setEditorShowForeignShapes = active => setState({
+        const setEditorShowForeignFeatures = active => setState({
             ...state,
             editor: {
                 ...state.editor,
-                showForeignShapes: active,
+                showForeignFeatures: active,
             }
         });
 
@@ -152,6 +157,22 @@ export const UIContextProvider = ({ children }) => {
             editor: {
                 ...state.editor,
                 snapDistance: distance,
+            }
+        });
+
+        const setEditorMarkerSize = size => setState({
+            ...state,
+            editor: {
+                ...state.editor,
+                markerSize: size,
+            }
+        });
+
+        const setEditorPencilStep = distance => setState({
+            ...state,
+            editor: {
+                ...state.editor,
+                pencilStep: distance,
             }
         });
 
@@ -166,8 +187,10 @@ export const UIContextProvider = ({ children }) => {
             setEditorSelectedTool,
             setEditorSelectedToolMode,
             setEditorSnap,
-            setEditorShowForeignShapes,
+            setEditorShowForeignFeatures,
             setEditorSnapDistance,
+            setEditorMarkerSize,
+            setEditorPencilStep,
         }
     }, [state]);
 

@@ -21,7 +21,7 @@ function FeatureCollection (props) {
     });
 
     const addFeatureToCategory = () => {
-        addNewPolygon("New shape", props.categoryFilter[0], crypto.randomUUID());
+        addNewPolygon("New polygon", props.categoryFilter[0], crypto.randomUUID());
     }
 
     useEffect(() => {

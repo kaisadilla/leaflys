@@ -54,7 +54,7 @@
         padding: $control-panel-padding;
         overflow-y: scroll;
 
-        h1, h2, h3, h4, h5, h6 {
+        .control-panel-header {
             border-bottom: 1px solid $color-primary-l1;
             padding-bottom: 5px;
             margin: 18px 0 6px 0;
@@ -71,14 +71,14 @@
             }
         }
 
-        h1 {
+        h1.control-panel-header {
             font-size: 20pt;
         }
-        h2 {
+        h2.control-panel-header {
             font-size: 16pt;
             font-weight: $w-semibold;
         }
-        h3 {
+        h3.control-panel-header {
             font-size: 14pt;
             font-weight: $w-regular;
         }
@@ -158,6 +158,7 @@
 
         .tools-and-actions {
             display: flex;
+            
             > div {
                 margin: 0 5px;
                 width: 100%;

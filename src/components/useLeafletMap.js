@@ -46,7 +46,7 @@ const useLeafletMap = () => {
                         _subpolys.push(getPolygon_draw(editedFeature.polygons[i], key, i, activeColor));
                     }
                     else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.edit) {
-                        _subpolys.push(getPolygon_edit(editedFeature.polygons[i], key, i, activeColor));
+                        
                     }
                     else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.cut) {
                         _subpolys.push(getPolygon_normal(editedFeature.polygons[i], key, i, activeColor));
@@ -125,77 +125,6 @@ const useLeafletMap = () => {
         );
 
         return _leafletFeatures;
-    }
-
-    function getPolygon_edit (polygon, key, polygonIndex, color) {
-        const _subpolys = [];
-
-        if (polygon[0].length > 0) {
-            for (const r in polygon) {
-                const ring = polygon[r];
-                for (const c in ring) {
-                    const dragVertex = {
-                        // use event "drag" to update borders in real time.
-                        dragend: e => {
-                            replaceVertexAt(c, e.target._latlng);
-                        }
-                    }
-
-                    _subpolys.push(
-                        <Marker
-                            key={["marker", polygonIndex, r, c]}
-                            position={ring[c]}
-                            icon={ICON_EDIT_VERTICES}
-                            eventHandlers={dragVertex}
-                            draggable={true}
-                        />
-                    )
-
-                    const thisCoord = ring[c];
-                    const lastCoord = c === "0" ? ring[ring.length - 1] : ring[c - 1];
-
-                    _subpolys.push(
-                        <Polyline key={["line", polygonIndex, r, c]} position={[lastCoord, thisCoord]} color />
-                    )
-
-                    // TODO: Rework, because this isn't actually the visual midpoint between two points.
-                    const lMidPoint = {lat: 0.5 * lastCoord.lat + 0.5 * thisCoord.lat, lng: 0.5 * lastCoord.lng + 0.5 * thisCoord.lng};
-
-                    const addVertex = {
-                        click: e => {
-                            insertVertexAt(c, lMidPoint);
-                        }
-                    };
-
-                    _subpolys.push(
-                        <Marker
-                            key={["marker-add", polygonIndex, r, c]}
-                            position={lMidPoint}
-                            icon={ICON_EDIT_VERTEX_MIDPOINT}
-                            eventHandlers={addVertex}
-                        />
-                    )
-                }
-            }
-
-            _subpolys.push(
-                <Polygon key={[key, polygon[0].length, "polygon"]} positions={polygon} color={color} stroke={false} />
-            )
-        }
-
-        return _subpolys;
-    }
-
-    function insertVertexAt (index, vertex) {
-        const newFeature = { ...editedFeature };
-        newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 0, vertex);
-        setEditedFeature(newFeature);
-    }
-
-    function replaceVertexAt (index, vertex) {
-        const newFeature = { ...editedFeature };
-        newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 1, vertex);
-        setEditedFeature(newFeature);
     }
 
     return {

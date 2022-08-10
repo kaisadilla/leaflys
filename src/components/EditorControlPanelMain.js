@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '../elements/Button';
 import Switch from '../elements/Switch';
 import { useDocumentContext } from '../logic/useDocumentContext';
+import NewPolygonDialog from './dialogs/NewPolygonDialog';
 import FeatureCollection from './FeatureCollection';
 import useEditorControlPanel from './useEditorControlPanelMain';
 
 function EditorControlPanelMain (props) {
+    const [dialogNewPolygon, setDialogNewPolygon] = useState(false);
+
     const { getPolygonCategories, isPolygonSectionEnabled, isPolygonCategoryEnabled } = useEditorControlPanel();
     const { setCategoryEnabled } = useDocumentContext();
 
@@ -26,29 +29,35 @@ function EditorControlPanelMain (props) {
     ));
 
     return (
-        <div className="editor-control-panel">
-            <div className="control-panel">
-                <h1 className="collection-section">
-                    <div className="left">
-                        <Switch
-                            id="enable-all"
-                            checked={isPolygonSectionEnabled}
-                            onChange={e => setCategoryEnabled("polygons", null, e.target.checked)}
-                        />
-                    </div>
-                    <div className="center">
-                        <span>Polygons</span>
-                    </div>
-                    <div className="right">
-                        <div className="control-panel-button-collection">
-                            <Button baseStyle="clear" label="Export section" />
-                            <Button baseStyle="success" icon="add" />
+        <>
+            <div className="editor-control-panel">
+                <div className="control-panel">
+                    <h1 className="collection-section">
+                        <div className="left">
+                            <Switch
+                                id="enable-all"
+                                checked={isPolygonSectionEnabled}
+                                onChange={e => setCategoryEnabled("polygons", null, e.target.checked)}
+                            />
                         </div>
-                    </div>
-                </h1>
-                {$polygonCollections}
+                        <div className="center">
+                            <span>Polygons</span>
+                        </div>
+                        <div className="right">
+                            <div className="control-panel-button-collection">
+                                <Button baseStyle="clear" label="Export section" />
+                                <Button baseStyle="success" icon="add" onClick={() => setDialogNewPolygon(true)} />
+                            </div>
+                        </div>
+                    </h1>
+                    {$polygonCollections}
+                </div>
             </div>
-        </div>
+            <NewPolygonDialog
+                isOpen={dialogNewPolygon}
+                close={() => setDialogNewPolygon(false)}
+            />
+        </>
     );
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useDocumentContext } from "../logic/useDocumentContext";
 
 const useEditorControlPanel = () => {
@@ -7,7 +7,7 @@ const useEditorControlPanel = () => {
     const [isPolygonSectionEnabled, setPolygonSectionEnabled] = useState(true);
     const [isPolygonCategoryEnabled, setPolygonCategoryEnabled] = useState([]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setPolygonSectionEnabled(() => isCategoryEnabled("polygons", null));
         
         const enabledCats = getPolygonCategories().map(c => {

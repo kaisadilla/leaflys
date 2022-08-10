@@ -1,8 +1,18 @@
 .input-combo {
     display: flex;
     align-items: center;
+
     label {
         font-weight: $w-semibold;
         margin-right: 8px;
+        text-align: left;
+    }
+
+    &.label-center > label {
+        text-align: center;
+    }
+
+    &.label-right > label {
+        text-align: right;
     }
 }
