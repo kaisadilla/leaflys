@@ -31,17 +31,26 @@ const useLeafletElementContainer = () => {
         iconSize: [editor.markerSize, editor.markerSize]
     }); // TODO: Dynamic.
     const ICON_EDIT_POINTER = L.divIcon({
-        className: "leaflet-bullet-marker edit-layer-marker-add"
+        className: "leaflet-bullet-marker edit-layer-marker-add",
+        iconSize: [editor.markerSize, editor.markerSize]
     });
     const ICON_EDIT_VERTEX_MIDPOINT = L.divIcon({
         className: "leaflet-bullet-marker edit-layer-marker-vertex",
         iconSize: [editor.markerSize * 0.625, editor.markerSize * 0.625]
     }); // TODO: Dynamic
+    const ICON_CHOSEN_POINTER = L.divIcon({
+        className: "leaflet-bullet-marker edit-layer-marker-chosen",
+        iconSize: [editor.markerSize * 2, editor.markerSize * 2],
+    });
 
     /*** leaflet map and elements drawn to it. */
     const [map, setMap] = useState(null);
+    /** contains the leaflet elements that draw Polygons not being edited. */
     const [$backgroundPolygons, setBackgroundPolygons] = useState([]);
+    /** contains the leaflet elements that draw the Polygon being edited. */
     const [$editedPolygons, setEditedPolygons] = useState([]);
+    /** contains the leaflet elements of the draw tool UI. */
+    const [$editionElementsDraw, setEditionElementsDraw] = useState([]);
     
     /*** edit polygon mode ***/
     /** the current coordinates of the marker that follows the mouse. */
@@ -61,16 +70,30 @@ const useLeafletElementContainer = () => {
         buildBackgroundPolygonObjects();
     }, [forceReloadFlag, forceRedraw, editedFeatureIndex]);
 
+    // TODO: This is inefficient. Only the elements related to the current action of
+    // the user should be updated (e.g. only the pointer and its line in edit mode).
     useEffect(() => {
         console.info("[DEBUG] Edited polygon rerendered.");
         buildEditedPolygonObjects();
     }, [
         forceReloadFlag,
         forceRedraw,
-        editedFeatureIndex,
-        editor.selectedTool === POLYGON_EDITOR_TOOLS.edit ? false : editMarkerCoords,
-        editor.selectedTool,
         editPolygonFlag,
+        editedFeatureIndex,
+        editor.selectedTool,
+        editor.markerSize,
+    ]);
+
+    useEffect(() => {
+        buildEditUI();
+    }, [
+        forceReloadFlag,
+        forceRedraw,
+        editPolygonFlag,
+        editedFeatureIndex,
+        editor.selectedTool,
+        editor.selectedTool === POLYGON_EDITOR_TOOLS.draw && editMarkerCoords,
+        editor.markerSize,
     ]);
 
     useEffect(() => {
@@ -126,8 +149,11 @@ const useLeafletElementContainer = () => {
                         if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
                             subpolys.push(buildPolygon_draw(editedFeature.polygons[i], i, key, activeColor));
                         }
-                        if (editor.selectedTool === POLYGON_EDITOR_TOOLS.edit) {
+                        else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.edit) {
                             subpolys.push(buildPolygon_edit(editedFeature.polygons[i], i, key, activeColor));
+                        }
+                        else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart) {
+                            subpolys.push(buildPolygon_selectStart(editedFeature.polygons[i], i, key, activeColor));
                         }
                         else {
                             subpolys.push(buildPolygon_normal(editedFeature.polygons[i], i, key, activeColor));
@@ -140,6 +166,26 @@ const useLeafletElementContainer = () => {
             }
 
             setEditedPolygons(subpolys);
+        }
+    }
+
+    function buildEditUI () {
+        const activeColor = document.settings.colors["active-color"];
+
+        const features = [];
+
+        if (editedFeature !== null) {
+            for(let i = 0; i < editedFeature.polygons.length; i++) {
+                    const key = [editedFeature.id, editedFeatureSubpolygonIndex];
+
+                if (i === editedFeatureSubpolygonIndex) {
+                    if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
+                        features.push(buildUI_draw(editedFeature.polygons[i], key, activeColor));
+                    }
+                }
+            }
+
+            setEditionElementsDraw(features);
         }
     }
     
@@ -168,7 +214,7 @@ const useLeafletElementContainer = () => {
                 for (const c in ring) {
                     if (bounds.contains(ring[c])) {
                         _leafletFeatures.push(
-                            <Marker key={["marker", polygonIndex, r, c]} position={ring[c]} icon={ICON_EDIT_POINTER} />
+                            <Marker key={["marker", polygonIndex, r, c]} position={ring[c]} icon={ICON_EDIT_VERTICES} />
                         );
                     }
                 }
@@ -180,6 +226,17 @@ const useLeafletElementContainer = () => {
 
             _leafletFeatures.push(
                 <Polygon key={[key, polygon[0].length, "polygon"]} positions={polygon} color={color} stroke={false} />,
+            );
+        }
+
+        return _leafletFeatures;
+    }
+
+    function buildUI_draw (polygon, key, color) {
+        const _leafletFeatures = [];
+        
+        if (polygon[0].length > 0) {
+            _leafletFeatures.push(
                 <Polyline
                     key={[[key, polygon[0].length], "polyline"]}
                     positions={[polygon[0][polygon[0].length - 1], editMarkerCoords]}
@@ -271,6 +328,61 @@ const useLeafletElementContainer = () => {
                     stroke={false}
                 />
             );
+        }
+
+        return _leafletFeatures;
+    }
+
+    /**
+     * Returns the leaflet object of the selected polygon for the select start tool.
+     */
+     function buildPolygon_selectStart (polygon, polygonIndex, key, color) {
+        function selectMarker (ringIndex, index) {
+            //polygon[ringIndex].pop(); // remove the last coordinate, which is the same as the first
+            const newStart = polygon[ringIndex].splice(index, polygon[ringIndex].length - index);
+            polygon[ringIndex] = [...newStart, ...polygon[ringIndex]];
+
+            setEditPolygonFlag(!editPolygonFlag);
+        }
+
+        const _leafletFeatures = [];
+        const bounds = map.getBounds();
+        
+        if (polygon[0].length > 0) {
+            _leafletFeatures.push(
+                <Polygon key={[key, polygon[0].length, "polygon"]} positions={polygon} color={color} />
+            );
+
+            for (const r in polygon) {
+                const ring = polygon[r];
+                for (const c in ring) {
+                    const evt_selectMarker = {
+                        click: e => {
+                            selectMarker(r, c);
+                        }
+                    }
+
+                    if (c === "0") {
+                        _leafletFeatures.push(
+                            <Marker
+                                key={["marker", polygonIndex, r, c]}
+                                position={ring[c]}
+                                icon={ICON_CHOSEN_POINTER}
+                            />
+                        );
+                    }
+                    else {
+                        _leafletFeatures.push(
+                            <Marker
+                                key={["marker", polygonIndex, r, c]}
+                                position={ring[c]}
+                                icon={ICON_EDIT_POINTER}
+                                eventHandlers={evt_selectMarker}
+                            />
+                        );
+                    }
+                }
+            }
         }
 
         return _leafletFeatures;
@@ -392,6 +504,7 @@ const useLeafletElementContainer = () => {
                         updatedFeature.polygons[editedFeatureSubpolygonIndex][0].push(editMarkerCoords);
                         setEditedFeature(updatedFeature);
                     }
+                    setEditPolygonFlag(!editPolygonFlag);
                 }
                 else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.cut) {
                     // logic to cut stuff.
@@ -512,6 +625,7 @@ const useLeafletElementContainer = () => {
          * array will be empty if no polygon is being edited. A check is not necessary.
          */
         $editedPolygons,
+        $editionElementsDraw,
         getEnabledPolygons,
         getForeignPolygons,
         setMap,

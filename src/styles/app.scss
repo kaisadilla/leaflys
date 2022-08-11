@@ -34,11 +34,14 @@
 
 .control-collection {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
 
     &.align-right {
         justify-content: right;
+    }
+
+    &.wrap {
+        flex-wrap: wrap;
     }
 }

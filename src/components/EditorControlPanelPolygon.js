@@ -93,7 +93,7 @@ function EditorControlPanelPolygon (props) {
                 <div className="shadow-border" />
             </div>
             <div className="control-panel control-panel-edit">
-                <h2 class="control-panel-header">Properties</h2>
+                <h2 className="control-panel-header">Properties</h2>
                 <div className="properties control-table">
                     <InputCombo className="pair">
                         <label htmlFor="feature-name">Name</label>
@@ -108,7 +108,7 @@ function EditorControlPanelPolygon (props) {
                         <Textbox id="feature-id" value={editedFeature.id} onChange={evt_idTextbox} />
                     </InputCombo>
                 </div>
-                <h2 class="control-panel-header">{editedFeatureIndex.length > 1 ? "Polygons (MultiPolygon)" : "Polygons"}</h2>
+                <h2 className="control-panel-header">{editedFeatureIndex.length > 1 ? "Polygons (MultiPolygon)" : "Polygons"}</h2>
                 <div className="polygon-selector">
                     <div className="polygon-gallery">
                         {$subPolygons}
@@ -117,8 +117,8 @@ function EditorControlPanelPolygon (props) {
                 </div>
                 <div className="tools-and-actions">
                     <div className="tools">
-                        <h2 class="control-panel-header">Tools</h2>
-                        <div className="control-collection">
+                        <h2 className="control-panel-header">Tools</h2>
+                        <div className="control-collection wrap">
                             <Button
                                 icon="mode_edit" iconStyle="g-outline" title="Draw shape"
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.draw)}
@@ -148,18 +148,23 @@ function EditorControlPanelPolygon (props) {
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.selectStart)}
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart}
                             />
+                            <Button
+                                icon="fa-square-minus" iconStyle="fa" title="Delete part of path"
+                                onClick={() => setTool(POLYGON_EDITOR_TOOLS.selectStart)}
+                                selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart}
+                            />
                         </div>
                     </div>
                     <div className="actions" style={{maxWidth: "82px"}}>
-                        <h2 class="control-panel-header">Actions</h2>
-                        <div className="control-collection">
+                        <h2 className="control-panel-header">Actions</h2>
+                        <div className="control-collection wrap">
                             <Button icon="undo" iconStyle="g-round" disabled />
                             <Button icon="redo" iconStyle="g-round" disabled />
                         </div>
                     </div>
                     <div className="edit-mode" style={{maxWidth: "126px"}}>
-                        <h2 class="control-panel-header">Edit mode</h2>
-                        <div className="control-collection">
+                        <h2 className="control-panel-header">Edit mode</h2>
+                        <div className="control-collection wrap">
                             <Button
                                 icon="fa-map-pin" iconStyle="fad" title="Place points"
                                 onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.place)}
@@ -178,7 +183,7 @@ function EditorControlPanelPolygon (props) {
                         </div>
                     </div>
                 </div>
-                <h2 class="control-panel-header">Options</h2>
+                <h2 className="control-panel-header">Options</h2>
                 <div className="options">
                     <Checkbox
                         id="snap-borders"
@@ -227,7 +232,7 @@ function EditorControlPanelPolygon (props) {
                         <Button baseStyle="danger" label="Reset options" />
                     </div>
                 </div>
-                <h2 class="control-panel-header">Data</h2>
+                <h2 className="control-panel-header">Data</h2>
                 <div className="data">
                     <div className="data-piece">
                         <span className="name">Area: </span>
@@ -238,7 +243,7 @@ function EditorControlPanelPolygon (props) {
                         <span className="value">{73} vertices</span>
                     </div>
                 </div>
-                <h2 class="control-panel-header">TO-DO</h2>
+                <h2 className="control-panel-header">TO-DO</h2>
                 <ul className="todo" style={{textAlign: "left"}}>
                     <li>Remove placeholder data from Data section and replace it with real data.</li>
                     <li>Count how many vertices the shape has, with an option to reduce them.</li>

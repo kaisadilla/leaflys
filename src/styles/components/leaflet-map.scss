@@ -62,6 +62,13 @@
     border: 1px solid #cf7900;
 }
 
+.edit-layer-marker-chosen {
+    background-color: #df6959;
+    border: 2px solid #aa1502;
+    z-index: 10000000 !important;
+    opacity: 85%;
+}
+
 .edit-layer-marker-delete {
     background-color: #fff;
     border: 1px solid #8f0000;

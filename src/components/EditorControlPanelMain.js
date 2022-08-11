@@ -16,7 +16,7 @@ function EditorControlPanelMain (props) {
 
     const $polygonCollections = polygonCategories.map(cat => (
         <React.Fragment key={cat}>
-            <h2 className="toggle-header">
+            <h2 className="toggle-header control-panel-header">
                 <Switch
                     id={`enable-${cat.replace(" ", "-")}`}
                     checked={isPolygonCategoryEnabled[cat]}
@@ -32,7 +32,7 @@ function EditorControlPanelMain (props) {
         <>
             <div className="editor-control-panel">
                 <div className="control-panel">
-                    <h1 className="collection-section">
+                    <h1 className="collection-section control-panel-header">
                         <div className="left">
                             <Switch
                                 id="enable-all"

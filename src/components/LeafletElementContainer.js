@@ -10,13 +10,13 @@ function LeafletElementContainer (props) {
 
     const {
         setBuiltMap,
-        $drawablePolygons,
     } = useLeafletMap();
 
     const {
         setMap,
         $backgroundPolygons,
         $editedPolygons,
+        $editionElementsDraw,
         LeafletEditInteraction,
     } = useLeafletElementContainer();
 
@@ -35,6 +35,7 @@ function LeafletElementContainer (props) {
         <>
             {$backgroundPolygons}
             {$editedPolygons}
+            {$editionElementsDraw}
             {editedFeature !== null && <LeafletEditInteraction />}
         </>
     );
