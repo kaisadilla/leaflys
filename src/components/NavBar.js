@@ -32,15 +32,19 @@ function NavBar (props) {
                 <Dropdown.Separator />
             </Dropdown>
             <div className="navbar-io-section">
-                <div className="navbar-button-group">
-                    <span className="navbar-group-name">Leaflys</span>
-                    <Button baseStyle="normal" label="Open" onClick={openDocument} />
-                    <Button baseStyle="success" label="Save" onClick={saveDocument} />
+                <div className="horizontal-control-group">
+                    <span className="horizontal-control-group-name navbar-group-name">Leaflys</span>
+                    <div className="horizontal-control-group-controls">
+                        <Button baseStyle="normal" label="Open" onClick={openDocument} />
+                        <Button baseStyle="success" label="Save" onClick={saveDocument} />
+                    </div>
                 </div>
-                <div className="navbar-button-group">
-                    <span className="navbar-group-name">Geojson</span>
-                    <Button baseStyle="normal" label="Import" />
-                    <Button baseStyle="success" label="Export" />
+                <div className="horizontal-control-group">
+                    <span className="horizontal-control-group-name navbar-group-name">Geojson</span>
+                    <div className="horizontal-control-group-controls">
+                        <Button baseStyle="normal" label="Import" />
+                        <Button baseStyle="success" label="Export" />
+                    </div>
                 </div>
             </div>
         </nav>

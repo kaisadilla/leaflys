@@ -18,6 +18,8 @@ export const POLYGON_EDITOR_TOOLS = {
     eraser: 3,
     move: 4,
     selectStart: 5,
+    deletePath: 6,
+    deleteOverlap: 7,
 }
 
 export const POLYGON_EDITOR_TOOL_MODES = {

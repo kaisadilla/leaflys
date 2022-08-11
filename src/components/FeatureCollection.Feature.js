@@ -10,7 +10,7 @@ import { useDocumentContext } from '../logic/useDocumentContext';
 import ConfirmDialog from '../elements/ConfirmDialog';
 
 function FeatureCollection_Feature(props) {
-    const { updatePolygon, deletePolygonAt } = useDocumentContext();
+    const { updatePolygon, deletePolygon } = useDocumentContext();
     const { setEditedFeatureIndex } = useUIContext();
 
     const [dialogDelete, setDialogDelete] = useState(false);
@@ -82,7 +82,7 @@ function FeatureCollection_Feature(props) {
             isOpen={dialogDelete}
             title="Delete feature"
             messageHTML={<span>Do you want to delete <b>{name}</b>?</span>}
-            confirm={() => deletePolygonAt(index)}
+            confirm={() => deletePolygon(feature.id)}
             confirmLabel="Delete"
             confirmStyle="danger"
             close={() => setDialogDelete(false)}

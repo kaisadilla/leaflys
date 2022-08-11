@@ -143,7 +143,7 @@ const useLeafletElementContainer = () => {
 
             if (editedFeature !== null) {
                 for (let i = 0; i < editedFeature.polygons.length; i++) {
-                    const key = [editedFeature.id, editedFeatureSubpolygonIndex];
+                    const key = [editedFeatureIndex, editedFeature.id, editedFeatureSubpolygonIndex];
 
                     if (i === editedFeatureSubpolygonIndex) {
                         if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {

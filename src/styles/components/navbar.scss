@@ -42,18 +42,6 @@
     }
 
     .navbar-group-name {
-        padding: 0 9px 0 18px;
-        border-right: 1px solid $color-primary-l3;
-        line-height: 22pt;
-        margin-right: 3px;
-        height: 32px;
-        display: block;
-    }
-    
-    .navbar-button-group {
-        display: flex;
-        flex-wrap: nowrap;
-        align-items: center;
-        column-gap: 6px;
+        font-weight: $w-regular;
     }
 }

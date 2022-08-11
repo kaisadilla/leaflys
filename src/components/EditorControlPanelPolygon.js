@@ -5,10 +5,12 @@ import InputCombo from '../elements/InputCombo';
 import Slider from '../elements/Slider';
 import Textbox from '../elements/Textbox';
 import { MathHelper } from '../helpers/MathHelper';
-import { POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../global';
 import { useDocumentContext } from '../logic/useDocumentContext';
 import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '../logic/useUIContext';
 import { Turflet } from '../logic/Turflet';
+import DrawToolOptions from './toolOptions/DrawToolOptions';
+import { HELP_MESSAGE_TOOL_CUT, HELP_MESSAGE_TOOL_DELETE_OVERLAP, HELP_MESSAGE_TOOL_DELETE_PATH, HELP_MESSAGE_TOOL_DRAW, HELP_MESSAGE_TOOL_EDIT, HELP_MESSAGE_TOOL_ERASER, HELP_MESSAGE_TOOL_MOVE, HELP_MESSAGE_TOOL_SELECT_START } from '../global';
+import DeleteOverlapOptions from './toolOptions/DeleteOverlapOptions';
 
 function EditorControlPanelPolygon (props) {
     const { document, updatePolygon } = useDocumentContext();
@@ -21,12 +23,6 @@ function EditorControlPanelPolygon (props) {
         setEditedFeatureSubpolygonIndex,
         setEditedFeature,
         setEditorSelectedTool,
-        setEditorSelectedToolMode,
-        setEditorSnap,
-        setEditorShowForeignFeatures,
-        setEditorSnapDistance,
-        setEditorMarkerSize,
-        setEditorPencilStep,
     } = useUIContext();
 
     const $subPolygons = editedFeature.polygons.map((p, i) => (
@@ -73,18 +69,13 @@ function EditorControlPanelPolygon (props) {
             id: evt.target.value,
         })
     };
-    const evt_snap = (evt) => setEditorSnap(evt.target.checked);
-    const evt_foreignFeatures = (evt) => setEditorShowForeignFeatures(evt.target.checked);
-    const evt_snapDistance = (evt) => setEditorSnapDistance(parseFloat(evt.target.value));
-    const evt_markerSize = (evt) => setEditorMarkerSize(parseFloat(evt.target.value));
-    const evt_pencilStep = (evt) => setEditorPencilStep(parseFloat(evt.target.value));
     // #endregion
 
     return (
         <div className="editor-control-panel">
             <div className="panel-header">
                 <div className="content">
-                    <span className="header-title">Edit polygon</span>
+                    <span className="header-title">Edit {editedFeature.polygons.length > 1 ? "multipolygon" : "polygon"}</span>
                     <div className="control-collection">
                         <Button baseStyle="danger" label="Cancel" onClick={evt_cancelEdit} />
                         <Button baseStyle="success" label="Save" onClick={evt_saveEdit} />
@@ -108,7 +99,9 @@ function EditorControlPanelPolygon (props) {
                         <Textbox id="feature-id" value={editedFeature.id} onChange={evt_idTextbox} />
                     </InputCombo>
                 </div>
-                <h2 className="control-panel-header">{editedFeatureIndex.length > 1 ? "Polygons (MultiPolygon)" : "Polygons"}</h2>
+                <h2 className="control-panel-header">
+                    {editedFeature.polygons.length > 1 ? "Subpolygons (MultiPolygon)" : "Subpolygons"}
+                </h2>
                 <div className="polygon-selector">
                     <div className="polygon-gallery">
                         {$subPolygons}
@@ -118,7 +111,7 @@ function EditorControlPanelPolygon (props) {
                 <div className="tools-and-actions">
                     <div className="tools">
                         <h2 className="control-panel-header">Tools</h2>
-                        <div className="control-collection wrap">
+                        <div className="control-collection wrap padded-collection">
                             <Button
                                 icon="mode_edit" iconStyle="g-outline" title="Draw shape"
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.draw)}
@@ -150,88 +143,60 @@ function EditorControlPanelPolygon (props) {
                             />
                             <Button
                                 icon="fa-square-minus" iconStyle="fa" title="Delete part of path"
-                                onClick={() => setTool(POLYGON_EDITOR_TOOLS.selectStart)}
-                                selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart}
+                                onClick={() => setTool(POLYGON_EDITOR_TOOLS.deletePath)}
+                                selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.deletePath}
+                            />
+                            <Button
+                                icon="fa-diagram-venn" iconStyle="fa" title="Substract shape"
+                                onClick={() => setTool(POLYGON_EDITOR_TOOLS.deleteOverlap)}
+                                selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.deleteOverlap}
                             />
                         </div>
                     </div>
-                    <div className="actions" style={{maxWidth: "82px"}}>
+                    <div className="actions" style={{maxWidth: "106px"}}>
                         <h2 className="control-panel-header">Actions</h2>
-                        <div className="control-collection wrap">
+                        <div className="control-collection wrap align-center padded-collection">
                             <Button icon="undo" iconStyle="g-round" disabled />
                             <Button icon="redo" iconStyle="g-round" disabled />
                         </div>
                     </div>
-                    <div className="edit-mode" style={{maxWidth: "126px"}}>
-                        <h2 className="control-panel-header">Edit mode</h2>
-                        <div className="control-collection wrap">
-                            <Button
-                                icon="fa-map-pin" iconStyle="fad" title="Place points"
-                                onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.place)}
-                                selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.place}
-                            />
-                            <Button
-                                icon="fa-scribble" iconStyle="fa" title="Draw line"
-                                onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.draw)}
-                                selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.draw}
-                            />
-                            <Button
-                                icon="fa-magnet" iconStyle="fad" title="Copy foreign lines"
-                                onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.snap)}
-                                selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.snap}
-                            />
-                        </div>
-                    </div>
                 </div>
-                <h2 className="control-panel-header">Options</h2>
-                <div className="options">
-                    <Checkbox
-                        id="snap-borders"
-                        label="Snap to nearby polygons."
-                        checked={editor.snap}
-                        onChange={evt_snap}
-                        highlight
-                    />
-                    <Checkbox
-                        id="show-others"
-                        label="Show other polygons."
-                        checked={editor.showForeignFeatures}
-                        onChange={evt_foreignFeatures}
-                        highlight
-                    />
-                    <div className="control-table">
-                        <InputCombo className="option-slider pair">
-                            <label htmlFor="snap-distance">Snap distance</label>
-                            <Slider
-                                id="snap-distance"
-                                {...POLYGON_EDITOR_SNAP_DISTANCE}
-                                value={editor.snapDistance}
-                                onChange={evt_snapDistance}
-                            />
-                        </InputCombo>
-                        <InputCombo className="option-slider pair">
-                            <label htmlFor="marker-size">Marker size</label>
-                            <Slider
-                                id="marker-size"
-                                {...POLYGON_EDITOR_MARKER_SIZE}
-                                value={editor.markerSize}
-                                onChange={evt_markerSize}
-                            />
-                        </InputCombo>
-                        <InputCombo className="option-slider pair">
-                            <label htmlFor="pencil-step">Pencil step</label>
-                            <Slider
-                                id="pencil-step"
-                                {...POLYGON_EDITOR_PENCIL_STEP}
-                                value={editor.pencilStep}
-                                onChange={evt_pencilStep}
-                            />
-                        </InputCombo>
-                    </div>
-                    <div className="options-control-bar">
-                        <Button baseStyle="danger" label="Reset options" />
-                    </div>
+                <div className="help">
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.draw &&
+                        <p><b>Draw tool</b> — {HELP_MESSAGE_TOOL_DRAW}</p>
+                    }
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.edit &&
+                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_EDIT}</p>
+                    }
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.cut &&
+                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_CUT}</p>
+                    }
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.eraser &&
+                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_ERASER}</p>
+                    }
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.move &&
+                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_MOVE}</p>
+                    }
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart &&
+                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_SELECT_START}</p>
+                    }
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.deletePath &&
+                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_DELETE_PATH}</p>
+                    }
+                    {
+                        editor.selectedTool === POLYGON_EDITOR_TOOLS.deleteOverlap &&
+                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_DELETE_OVERLAP}</p>
+                    }
                 </div>
+                <DrawToolOptions />
+                <DeleteOverlapOptions />
                 <h2 className="control-panel-header">Data</h2>
                 <div className="data">
                     <div className="data-piece">

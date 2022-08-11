@@ -8,3 +8,44 @@
 @import "elements/span-button";
 @import "elements/switch";
 @import "elements/textbox";
+
+.control-collection {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    &.align-right {
+        justify-content: right;
+    }
+
+    &.align-center {
+        justify-content: center;
+    }
+
+    &.wrap {
+        flex-wrap: wrap;
+    }
+}
+    
+.horizontal-control-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    column-gap: 6px;
+
+    .horizontal-control-group-name {
+        padding: 0 9px 0 18px;
+        border-right: 1px solid $color-primary-l3;
+        line-height: 22pt;
+        margin-right: 3px;
+        height: 32px;
+        display: block;
+        font-weight: $w-semibold;
+    }
+
+    .horizontal-control-group-controls {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 6px;
+    }
+}
