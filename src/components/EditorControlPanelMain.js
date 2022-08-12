@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import Button from '../elements/Button';
+import CollapsableBlock from '../elements/CollapsableBlock';
 import Switch from '../elements/Switch';
 import { useDocumentContext } from '../logic/useDocumentContext';
 import NewPolygonDialog from './dialogs/NewPolygonDialog';
 import FeatureCollection from './FeatureCollection';
+import OverlayImagePanel from './OverlayImagePanel';
 import useEditorControlPanel from './useEditorControlPanelMain';
 
 function EditorControlPanelMain (props) {
@@ -32,6 +34,10 @@ function EditorControlPanelMain (props) {
         <>
             <div className="editor-control-panel">
                 <div className="control-panel">
+                    <h1 className="control-panel-header">Document</h1>
+                    <CollapsableBlock className="collapsable-section" header="Overlay images (3)">
+                        <OverlayImagePanel />
+                    </CollapsableBlock>
                     <h1 className="collection-section control-panel-header">
                         <div className="left">
                             <Switch

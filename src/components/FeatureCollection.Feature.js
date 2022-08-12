@@ -36,7 +36,6 @@ function FeatureCollection_Feature(props) {
     };
 
     useLayoutEffect(() => {
-        console.log("USE EFFECT TRIGGERED!");
         setEnabled(feature.properties.leaflys ? feature.properties.leaflys.enabled : true);
     }, [feature]);
     

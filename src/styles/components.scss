@@ -1,7 +1,8 @@
 @import "components/navbar";
 @import "components/editor-map";
-    @import "components/leaflet-map";
 @import "components/editor-control-panel";
-    @import "components/feature-collection";
+@import "components/feature-collection";
+@import "components/leaflet-map";
+@import "components/overlay-image-panel";
 
 @import "components/dialogs/dialog-new-shape";

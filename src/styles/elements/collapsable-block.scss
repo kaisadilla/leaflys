@@ -1,0 +1,67 @@
+.collapsable-block {
+    $border-radius: 6px;
+
+    .collapsable-block-header {
+        @include clickable();
+        @include no-select();
+
+        background-color: $color-primary-l4;
+        display: flex;
+        position: relative;
+        padding: 5px 12px;
+
+        border-top-left-radius: $border-radius;
+        border-top-right-radius: $border-radius;
+
+        transition: background-color 0.25s;
+
+        .header-text {
+            font-weight: $w-semibold;
+        }
+
+        .collapse-button {
+            position: absolute;
+            top: 3px;
+            right: 5px;
+
+            transition: transform 0.25s;
+        }
+    }
+
+    .collapsible-block-body {
+        //overflow: hidden;
+        //transition: 0.5s;
+        //max-height: fit-content;
+        //border-bottom: 1px solid red;
+    }
+
+    &.collapsed {
+        .collapsable-block-header {
+            border-bottom-left-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+        }
+
+        .collapsible-block-body {
+            //scale: 1 0;
+            //max-height: 0px;
+        }
+    }
+    &.expanded {
+        .collapsable-block-header {
+            background-color: $color-primary-l3;
+
+            .collapse-button {
+                transform: rotate(180deg);
+            }
+        }
+    }
+}
+
+.collapsable-div {
+    overflow: hidden;
+    transition: 0.4s max-height;
+
+    > div {
+        overflow: auto;
+    }
+}

@@ -58,25 +58,3 @@ function DeleteOverlapOptions (props) {
 }
 
 export default DeleteOverlapOptions;
-
-//<Dropdown
-//label={EDITOR_MODES_NAMES[editorMode]}
-//className="editor-mode-menu"
-//buttonClassName="editor-mode-menu-button"
-//menuClassName="editor-mode-menu-dropdown"
-//>
-//{
-//    Object.keys(EDITOR_MODES).map(k => {
-//        return (
-//            <Dropdown.Item
-//                key={k}
-//                onClick={() => setEditorMode(EDITOR_MODES[k])}
-//                selected={editorMode === EDITOR_MODES[k]}
-//            >
-//                {EDITOR_MODES_NAMES[EDITOR_MODES[k]]}
-//            </Dropdown.Item>
-//        )
-//    })
-//}
-//<Dropdown.Separator />
-//</Dropdown>
