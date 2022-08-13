@@ -6,7 +6,8 @@ export const useDocumentContext = () => useContext(DocumentContext);
 
 export const DocumentContextProvider = ({ children }) => {
     const [state, setState] = useState({
-        document: getInitialDocument(),
+        document: _getInitialDocument(),
+        layoutImages: [],
         /**
          * useEffect statements can subscribe to this flag to update when the document
          * is substantially changed (e.g. when loading a new document). */
@@ -22,9 +23,44 @@ export const DocumentContextProvider = ({ children }) => {
         const setDocument = document => {
             setState({
                 ...state,
-                document: document,
+                document,
                 forceReloadFlag: !state.forceReloadFlag,
                 forceRedrawFlag: !state.forceRedrawFlag,
+            });
+        }
+
+        const addLayoutImage = (fileName, imgBase64) => {
+            const layoutImages = [
+                ...state.layoutImages,
+                DocumentHelper.getNew.layoutImage(fileName, imgBase64),
+            ];
+            setState({
+                ...state,
+                layoutImages,
+            });
+        }
+
+        /**
+         * Replaces the polygon at the index given with the one given.
+         * @param {*} index The index of the polygon in the document's polygon array.
+         * @param {*} polygon Ab oject containing a polygon (or multipolygon).
+         */
+        const updateLayoutImageAt = (index, layoutImage) => {
+            const layoutImages = [...state.layoutImages];
+            layoutImages.splice(index, 1, layoutImage);
+
+            setState({
+                ...state,
+                layoutImages,
+            });
+        };
+
+        const removeLayoutImageAt = index => {
+            const layoutImages = [...state.layoutImages];
+            layoutImages.splice(index, 1);
+            setState({
+                ...state,
+                layoutImages,
             });
         }
 
@@ -124,6 +160,9 @@ export const DocumentContextProvider = ({ children }) => {
         return {
             ...state,
             setDocument,
+            addLayoutImage,
+            updateLayoutImageAt,
+            removeLayoutImageAt,
             addNewPolygon,
             updatePolygon,
             deletePolygon,
@@ -143,7 +182,7 @@ export const DocumentContextProvider = ({ children }) => {
  * Returns a document in the local storage if there's any,
  * or a sample document if there isn't.
  */
-function getInitialDocument () {
+function _getInitialDocument () {
     // TODO: Read local storage.
     return DocumentHelper.getTemplate.document();
 }

@@ -1,8 +1,14 @@
 import { useLayoutEffect, useState } from "react";
+import fileDialog from "file-dialog";
+import { Buffer } from "buffer";
 import { useDocumentContext } from "../logic/useDocumentContext";
 
 const useEditorControlPanel = () => {
-    const { document, isCategoryEnabled } = useDocumentContext();
+    const {
+        document,
+        isCategoryEnabled,
+        addLayoutImage,
+    } = useDocumentContext();
 
     const [isPolygonSectionEnabled, setPolygonSectionEnabled] = useState(true);
     const [isPolygonCategoryEnabled, setPolygonCategoryEnabled] = useState([]);
@@ -31,10 +37,26 @@ const useEditorControlPanel = () => {
         return [...setCats].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
     }
 
+    /**
+     * Loads a Leaflys document as the document for the editor.
+     */
+    function loadLayoutImage () {
+        fileDialog().then(file => {
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(file[0]);
+            reader.onload = e => {
+                const img64 = Buffer.from(e.target.result, "binary").toString("base64");
+                addLayoutImage(file[0].name, img64);
+                console.info(`[DEBUG] Loaded new layout image! (${file[0].name}, length: ${img64.length})`);
+            };
+        });
+    }
+
     return {
         isPolygonSectionEnabled,
         isPolygonCategoryEnabled,
         getPolygonCategories,
+        loadLayoutImage,
     }
 }
 

@@ -1,0 +1,53 @@
+.default-numeric {
+    width: 72px;
+    border: 0px;
+    outline: 0px;
+    background-color: transparent;
+    border-bottom: 1px solid $gray2;
+    padding: 0 6px;
+    color: $gray6;
+
+    &:focus {
+        border-color: $color-primary-l1;
+        color: $color-primary-d3;
+    }
+
+    &.no-arrows {
+        -moz-appearance: textfield;
+        -webkit-appearance: none;
+        appearance: none;
+
+        &::-webkit-inner-spin-button, 
+        &::-webkit-outer-spin-button { 
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none; 
+        }
+    }
+
+    &.size-small {
+        border-bottom-width: 1px;
+        font-size: 10pt;
+    }
+    &.size-normal {
+        border-bottom-width: 1px;
+        font-size: 12pt;
+        &:focus {
+            border-bottom-width: 2px;
+            margin-bottom: -1px;
+        }
+    }
+    &.size-big {
+        border-bottom-width: 1px;
+        font-size: 14pt;
+        &:focus {
+            border-bottom-width: 2px;
+            margin-bottom: -1px;
+        }
+    }
+
+    &::selection {
+        background-color: $color-primary;
+        color: $white;
+    }
+}

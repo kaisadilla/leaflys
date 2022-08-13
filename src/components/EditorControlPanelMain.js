@@ -11,8 +11,17 @@ import useEditorControlPanel from './useEditorControlPanelMain';
 function EditorControlPanelMain (props) {
     const [dialogNewPolygon, setDialogNewPolygon] = useState(false);
 
-    const { getPolygonCategories, isPolygonSectionEnabled, isPolygonCategoryEnabled } = useEditorControlPanel();
-    const { setCategoryEnabled } = useDocumentContext();
+    const {
+        isPolygonSectionEnabled,
+        isPolygonCategoryEnabled,
+        getPolygonCategories,
+        loadLayoutImage,
+    } = useEditorControlPanel();
+
+    const {
+        setCategoryEnabled,
+        layoutImages,
+    } = useDocumentContext();
 
     const polygonCategories = getPolygonCategories();
 
@@ -30,13 +39,20 @@ function EditorControlPanelMain (props) {
         </React.Fragment>
     ));
 
+    const $layoutImages = layoutImages.map((img, i) => {
+        return <OverlayImagePanel key={i} imageIndex={i} />
+    });
+
     return (
         <>
             <div className="editor-control-panel">
                 <div className="control-panel">
                     <h1 className="control-panel-header">Document</h1>
-                    <CollapsableBlock className="collapsable-section" header="Overlay images (3)">
-                        <OverlayImagePanel />
+                    <CollapsableBlock className="collapsable-section" header={`Overlay images (${layoutImages.length})`}>
+                        {$layoutImages}
+                        <div className="control-collection align-right" style={{width: "100%"}}>
+                            <Button baseStyle="success" icon="add" onClick={loadLayoutImage}/>
+                        </div>
                     </CollapsableBlock>
                     <h1 className="collection-section control-panel-header">
                         <div className="left">

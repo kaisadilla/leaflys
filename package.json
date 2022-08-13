@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@turf/nearest-point-on-line": "^6.5.0",
     "@turf/turf": "^6.5.0",
+    "buffer": "^6.0.3",
     "file-dialog": "^0.0.8",
     "file-saver": "^2.0.5",
     "leaflet-distortableimage": "^0.21.7",

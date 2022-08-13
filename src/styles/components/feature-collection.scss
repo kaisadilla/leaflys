@@ -1,14 +1,13 @@
 .feature-collection {
     padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 5px;
 
     .action-buttons {
         padding: 5px 0 0 0;
         display: flex;
         justify-content: flex-end;
-    }
-
-    .feature:not(:last-child) {
-        margin-bottom: 5px;
     }
 }
 

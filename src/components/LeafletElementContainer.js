@@ -4,9 +4,14 @@ import useLeafletMap from './useLeafletMap';
 import { useUIContext } from '../logic/useUIContext';
 import useLeafletElementContainer from './useLeafletElementContainer';
 import L from "leaflet";
+import { useDocumentContext } from '../logic/useDocumentContext';
 
 function LeafletElementContainer (props) {
     const map = useMap();
+
+    const {
+        layoutImages,
+    } = useDocumentContext();
 
     const {
         setBuiltMap,
@@ -14,6 +19,7 @@ function LeafletElementContainer (props) {
 
     const {
         setMap,
+        $layoutImages,
         $backgroundPolygons,
         $editedPolygons,
         $editionElementsDraw,
@@ -26,13 +32,9 @@ function LeafletElementContainer (props) {
         setMap(map);
     }, []);
 
-    const ICON_EDIT_VERTICES = () => L.divIcon({
-        className: "leaflet-bullet-marker edit-layer-marker-vertex",
-        iconSize: 12
-    }); // TODO: Dynamic.
-
     return (
         <>
+            {$layoutImages}
             {$backgroundPolygons}
             {$editedPolygons}
             {$editionElementsDraw}

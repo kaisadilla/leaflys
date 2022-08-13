@@ -59,7 +59,6 @@ function templatePolygonSettings () {
         "enabled": true,
     };
 }
-
 function exampleDocument () {
     const doc = blankDocument();
     doc.features.polygons.push(examplePolygon());
@@ -85,6 +84,16 @@ function newPolygon (name, category, id) {
             ]
         }
     };
+}
+
+function newLayoutImage (fileName, base64) {
+    return {
+        name: fileName,
+        base64,
+        northEast: { lat: 20, lng: 0 },
+        southWest: { lat: 0, lng: 20 },
+        opacity: 0.5,
+    }
 }
 
 function formatGeojsonCoords (json) {
@@ -115,9 +124,11 @@ const DocumentHelper = {
         polygon: examplePolygon,
         documentSettings: templateDocumentSettings,
         polygonSettings: templatePolygonSettings,
+        layoutImage: newLayoutImage,
     },
     getNew: {
         polygon: newPolygon,
+        layoutImage: newLayoutImage,
     },
     formatGeojsonCoords,
     copyToClipboard,

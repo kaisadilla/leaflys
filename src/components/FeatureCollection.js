@@ -41,7 +41,7 @@ function FeatureCollection (props) {
             {$features}
             {
                 props.addButton &&
-                <div className="control-collection align-right">
+                <div className="control-collection align-right" style={{width: "100%"}}>
                     <Button baseStyle="success" icon="add" onClick={addFeatureToCategory} />
                 </div>
             }

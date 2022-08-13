@@ -13,7 +13,7 @@ import { MathHelper } from "../helpers/MathHelper";
 import { Turflet } from "../logic/Turflet";
 
 const useLeafletElementContainer = () => {
-    const { document, forceReloadFlag, forceRedraw } = useDocumentContext();
+    const { document, layoutImages, forceReloadFlag, forceRedraw } = useDocumentContext();
 
     const {
         specialKeys,
@@ -45,6 +45,8 @@ const useLeafletElementContainer = () => {
 
     /*** leaflet map and elements drawn to it. */
     const [map, setMap] = useState(null);
+    /** contains <LayoutImage> elements. */
+    const [$layoutImages, setLayoutImages] = useState([]);
     /** contains the leaflet elements that draw Polygons not being edited. */
     const [$backgroundPolygons, setBackgroundPolygons] = useState([]);
     /** contains the leaflet elements that draw the Polygon being edited. */
@@ -64,6 +66,11 @@ const useLeafletElementContainer = () => {
     
     /** If true, adding the current vertex will finish the shape and deselect the current editing tool. */
     let finishingVertex = false;
+
+    useEffect(() => {
+        console.info("[DEBUG] Layout images rerendered.");
+        buildLayoutImages();
+    }, [layoutImages])
 
     useEffect(() => {
         console.info("[DEBUG] Background polygons rerendered.");
@@ -106,6 +113,22 @@ const useLeafletElementContainer = () => {
         }
     }, [editedFeatureIndex]);
 
+    function buildLayoutImages () {
+        const elements = layoutImages.map((img, i) => {
+            return (
+                <ImageOverlay
+                    key={[i, img.northEast.lat, img.northEast.lng, img.southWest.lat, img.southWest.lng, img.opacity]}
+                    url={`data:image/png;base64, ${img.base64}`}
+                    bounds={[
+                        [img.northEast.lat, img.northEast.lng],
+                        [img.southWest.lat, img.southWest.lng],
+                    ]}
+                    opacity={img.opacity}
+                />
+            );
+        });
+        setLayoutImages(elements);
+    }
 
     function buildBackgroundPolygonObjects () {
         // when no feature is being edited.
@@ -618,6 +641,7 @@ const useLeafletElementContainer = () => {
     }
 
     return {
+        $layoutImages,
         /** An array containing the polygons that are not being edited right now. */
         $backgroundPolygons,
         /**

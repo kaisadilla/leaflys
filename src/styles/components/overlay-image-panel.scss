@@ -1,14 +1,95 @@
 .overlay-image-panel {
-    background-color: $gray4;
+    background-color: $color-primary-l2;
     width: 100%;
-    height: 100px;
+    height: 80px;
     border-radius: 8px;
 
     > div.content {
         display: grid;
+        height: 100%;
 
-        > img.thumbnail {
-            height: 62px;
+        grid-template-columns: 96px 1fr 1fr 1fr;
+        grid-template-rows: 28px 1fr 1fr 4px;
+
+        > div.thumbnail-cell {
+            grid-column: 1 / 2;
+            grid-row: 1 / 5;
+
+            padding: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .thumbnail {
+                display: block;
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 8px;
+            }
+        }
+
+        > div.name-cell {
+            grid-column: 2 / -1;
+            grid-row: 1 / 2;
+
+            padding: 0px 8px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+
+            > .title {
+                @include no-wrap();
+                @include ellipsis();
+
+                width: 100%;
+                padding-right: 6px;
+                font-weight: $w-semibold;
+                text-align: left;
+            }
+        }
+
+        > div.attr-cell-1 {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+        }
+
+        > div.attr-cell-2 {
+            grid-column: 3 / 4;
+            grid-row: 2 / 3;
+        }
+
+        > div.attr-cell-3 {
+            grid-column: 2 / 3;
+            grid-row: 3 / 4;
+        }
+
+        > div.attr-cell-4 {
+            grid-column: 3 / 4;
+            grid-row: 3 / 4;
+        }
+
+        .attr {
+            font-size: 10pt;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+
+            label {
+                @include no-wrap();
+                margin-right: 6px;
+            }
+        }
+    }
+
+    .default-numeric {
+        border-bottom-color: $color-primary;
+        width: 100%;
+        font-size: 10pt;
+
+        &:focus {
+            border-bottom-color: $color-primary-d1;
         }
     }
 }
