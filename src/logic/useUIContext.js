@@ -64,7 +64,8 @@ export const UIContextProvider = ({ children }) => {
             snapDistance: 25,
             markerSize: 12,
             pencilStep: 40,
-        }
+        },
+        forceEditorUpdateFlag: false,
     });
 
     const value = useMemo(() => {
@@ -121,6 +122,19 @@ export const UIContextProvider = ({ children }) => {
             ...state,
             editedFeature: feature,
         });
+
+        const setEditedFeatureGeometry = (geojsonFeature) => {
+            setState({
+                ...state,
+                editedFeatureIndex: state.editedFeatureIndex,
+                editedFeatureSubpolygonIndex: 0,
+                editedFeature: {
+                    ...state.editedFeature,
+                    polygons: Turflet.polygon.geojsonToLeaflet(geojsonFeature),
+                },
+                forceEditorUpdateFlag: !state.forceEditorUpdateFlag,
+            });
+        }
 
         const setEditorSelectedTool = tool => setState({
             ...state,
@@ -186,6 +200,7 @@ export const UIContextProvider = ({ children }) => {
             setEditedFeatureIndex,
             setEditedFeatureSubpolygonIndex,
             setEditedFeature,
+            setEditedFeatureGeometry,
             setEditorSelectedTool,
             setEditorSelectedToolMode,
             setEditorSnap,

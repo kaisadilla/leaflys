@@ -112,6 +112,10 @@ export const DocumentContextProvider = ({ children }) => {
             });
         };
 
+        const getPolygonById = (id) => {
+            return state.document.features.polygons.find(p => p.id === id);
+        }
+
         /**
          * Returns true only if all features in a section is enabled.
          * If "null" is passed as section, all features in the document will be counted.
@@ -166,6 +170,7 @@ export const DocumentContextProvider = ({ children }) => {
             addNewPolygon,
             updatePolygon,
             deletePolygon,
+            getPolygonById,
             isCategoryEnabled,
             setCategoryEnabled,
         }

@@ -1,57 +1,72 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '../../elements/Button';
 import Checkbox from '../../elements/Checkbox';
 import InputCombo from '../../elements/InputCombo';
 import Slider from '../../elements/Slider';
 import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '../../logic/useUIContext';
-import { POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
+import { HELP_MESSAGE_TOOL_DELETE_OVERLAP, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
 import { useDocumentContext } from '../../logic/useDocumentContext';
 import Dropdown from '../../elements/Dropdown';
+import { Turflet } from '../../logic/Turflet';
+import { clipPolygon } from '../../logic/Leaflys';
+import { useStateCallback } from '../../helpers/useStateCallback';
 
 function DeleteOverlapOptions (props) {
-    const { document } = useDocumentContext();
+    const {
+        document,
+        getPolygonById,
+        forceRedrawFlag,
+    } = useDocumentContext();
 
     const {
         editor,
-        setEditorSelectedToolMode,
-        setEditorSnap,
-        setEditorShowForeignFeatures,
-        setEditorSnapDistance,
-        setEditorMarkerSize,
-        setEditorPencilStep,
+        editedFeature,
+        setEditedFeatureGeometry
     } = useUIContext();
 
-    const evt_snap = (evt) => setEditorSnap(evt.target.checked);
-    const evt_foreignFeatures = (evt) => setEditorShowForeignFeatures(evt.target.checked);
-    const evt_snapDistance = (evt) => setEditorSnapDistance(parseFloat(evt.target.value));
-    const evt_markerSize = (evt) => setEditorMarkerSize(parseFloat(evt.target.value));
-    const evt_pencilStep = (evt) => setEditorPencilStep(parseFloat(evt.target.value));
+    const sortedPolygons = [...document.features.polygons]
+        // enabled polygons that are not the currently edited polygon.
+        .filter((p => (p.properties.leaflys.enabled ?? true) && (p.id !== editedFeature.id)))
+        // sort alphabetically.
+        .sort((a, b) => a.properties.name.localeCompare(b.properties.name));
+
+    const firstPolyInList = sortedPolygons[0] ? sortedPolygons[0].id : null;
+    const [ selectedPoly, setSelectedPoly ] = useStateCallback(firstPolyInList);
 
     if (editor.selectedTool !== POLYGON_EDITOR_TOOLS.deleteOverlap) return <></>
 
+    const evt_carve = (evt) => {
+        if (selectedPoly !== null) {
+            const geojson = Turflet.polygon.leafletToGeojson(editedFeature.polygons);
+            const newGeojson = clipPolygon(geojson, getPolygonById(selectedPoly));
+            setEditedFeatureGeometry(newGeojson);
+        }
+    };
+
     return (
         <>
-            <h2 className="control-panel-header">Cut shape options</h2>
+            <h2 className="control-panel-header">Clip overlapping polygon tool</h2>
+            <div className="help">
+                <p><i>{HELP_MESSAGE_TOOL_DELETE_OVERLAP}</i></p>
+            </div>
             <div className="tool-options">
-                <select>
-                    {
-                        document.features.polygons.map(p => (
-                            <option>{p.properties.name}</option>
-                        ))
-                    }
-                </select>
                 <InputCombo>
-                    <label htmlFor="select-polygon">Select polygon</label>
-                    <Dropdown label={document.features.polygons[0].properties.name + "adfsagasfh awh awrhhwr "}>
+                    <label htmlFor="delete-overlap-list">Polygon to clip: </label>
+                    <select 
+                        id="delete-overlap-list"
+                        value={selectedPoly}
+                        onChange={e => setSelectedPoly(e.target.value)}
+                    >
                         {
-                            document.features.polygons.map(p => (
-                                <Dropdown.Item>
-                                    {p.properties.name}
-                                </Dropdown.Item>
+                            sortedPolygons.map(p => (
+                                <option key={p.id} value={p.id}>{p.properties.name}</option>
                             ))
                         }
-                    </Dropdown>
+                    </select>
                 </InputCombo>
+                <div className="options-control-bar">
+                    <Button baseStyle="danger" label="Carve" onClick={evt_carve} />
+                </div>
             </div>
         </>
     );

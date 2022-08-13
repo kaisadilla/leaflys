@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MathHelper } from '../helpers/MathHelper';
 
 /**
@@ -17,19 +17,12 @@ function Numeric (props) {
     const className = props.className ?? "";
 
     const [displayText, setDisplayText] = useState(props.value);
+    let inputElement = useRef();
 
     const evt_onChange = (evt) => {
         let val = evt.target.value;
 
-        if (val === "-") {
-            props.onChange(0);
-            setDisplayText(val);
-        }
-        else if (val === "") {
-            props.onChange(0);
-            setDisplayText(val);
-        }
-        else if (val === "-.") {
+        if (val === "-" || val === "." || val === "" || val === "-.") {
             props.onChange(0);
             setDisplayText(val);
         }
@@ -53,8 +46,15 @@ function Numeric (props) {
         props.onChange(MathHelper.clamp(val, props.min, props.max));
     }
 
+    useEffect(() => {
+        if (document.activeElement !== inputElement) {
+            setDisplayText(props.value);
+        }
+    }, [props.value]);
+
     return (
         <input
+            ref={ref => inputElement = ref}
             type="textbox"
             id={idName}
             className={`default-numeric no-arrows ${baseSize} ${className}`}

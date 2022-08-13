@@ -51,4 +51,4 @@ export const HELP_MESSAGE_TOOL_DELETE_PATH =
 
 export const HELP_MESSAGE_TOOL_DELETE_OVERLAP =
     "Select another polygon by clicking it on the map or choosing it on " +
-    "the menu below. Then press \"accept\" to cut that polygon from yours!";
+    "the menu below. Then press \"Carve\" to cut that polygon from yours!";

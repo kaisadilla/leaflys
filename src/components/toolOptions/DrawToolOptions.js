@@ -4,7 +4,7 @@ import Checkbox from '../../elements/Checkbox';
 import InputCombo from '../../elements/InputCombo';
 import Slider from '../../elements/Slider';
 import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '../../logic/useUIContext';
-import { POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
+import { HELP_MESSAGE_TOOL_DRAW, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
 
 function DrawToolOptions (props) {
     const {
@@ -27,7 +27,10 @@ function DrawToolOptions (props) {
 
     return (
         <>
-            <h2 className="control-panel-header">Draw options</h2>
+            <h2 className="control-panel-header">Draw tool</h2>
+            <div className="help">
+                <p><i>{HELP_MESSAGE_TOOL_DRAW}</i></p>
+            </div>
             <div className="tool-options">
                 <div className="horizontal-control-group">
                     <span className="horizontal-control-group-name">Draw mode</span>

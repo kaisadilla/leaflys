@@ -24,6 +24,7 @@ const useLeafletElementContainer = () => {
         setEditedFeatureSubpolygonIndex,
         setEditedFeature,
         setEditorSelectedTool,
+        forceEditorUpdateFlag,
     } = useUIContext();
 
     const ICON_EDIT_VERTICES = L.divIcon({
@@ -66,6 +67,10 @@ const useLeafletElementContainer = () => {
     
     /** If true, adding the current vertex will finish the shape and deselect the current editing tool. */
     let finishingVertex = false;
+
+    useEffect(() => {
+        setEditPolygonFlag(!editPolygonFlag);
+    }, [editedFeature?.polygons]);
 
     useEffect(() => {
         console.info("[DEBUG] Layout images rerendered.");

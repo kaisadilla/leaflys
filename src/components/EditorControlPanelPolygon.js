@@ -34,6 +34,10 @@ function EditorControlPanelPolygon (props) {
         />
     ));
 
+    function setTool (selectedTool) {
+        setEditorSelectedTool(editor.selectedTool === selectedTool ? null : selectedTool);
+    }
+
     // #region Events
     const evt_cancelEdit = () => {
         setEditedFeatureIndex(null);
@@ -147,7 +151,7 @@ function EditorControlPanelPolygon (props) {
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.deletePath}
                             />
                             <Button
-                                icon="fa-diagram-venn" iconStyle="fa" title="Substract shape"
+                                icon="fa-diagram-venn" iconStyle="fa" title="Clip overlapping polygon"
                                 onClick={() => setTool(POLYGON_EDITOR_TOOLS.deleteOverlap)}
                                 selected={editor.selectedTool === POLYGON_EDITOR_TOOLS.deleteOverlap}
                             />
@@ -163,36 +167,34 @@ function EditorControlPanelPolygon (props) {
                 </div>
                 <div className="help">
                     {
-                        editor.selectedTool === POLYGON_EDITOR_TOOLS.draw &&
-                        <p><b>Draw tool</b> — {HELP_MESSAGE_TOOL_DRAW}</p>
-                    }
-                    {
+                        // TODO: REMOVE
                         editor.selectedTool === POLYGON_EDITOR_TOOLS.edit &&
                         <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_EDIT}</p>
                     }
                     {
+                        // TODO: REMOVE
                         editor.selectedTool === POLYGON_EDITOR_TOOLS.cut &&
-                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_CUT}</p>
+                        <p><b>Cut tool</b> — {HELP_MESSAGE_TOOL_CUT}</p>
                     }
                     {
+                        // TODO: REMOVE
                         editor.selectedTool === POLYGON_EDITOR_TOOLS.eraser &&
-                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_ERASER}</p>
+                        <p><b>Delete vertex tool</b> — {HELP_MESSAGE_TOOL_ERASER}</p>
                     }
                     {
+                        // TODO: REMOVE
                         editor.selectedTool === POLYGON_EDITOR_TOOLS.move &&
-                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_MOVE}</p>
+                        <p><b>Move tool</b> — {HELP_MESSAGE_TOOL_MOVE}</p>
                     }
                     {
+                        // TODO: REMOVE
                         editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart &&
-                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_SELECT_START}</p>
+                        <p><b>Select starting vertex tool</b> — {HELP_MESSAGE_TOOL_SELECT_START}</p>
                     }
                     {
+                        // TODO: REMOVE
                         editor.selectedTool === POLYGON_EDITOR_TOOLS.deletePath &&
-                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_DELETE_PATH}</p>
-                    }
-                    {
-                        editor.selectedTool === POLYGON_EDITOR_TOOLS.deleteOverlap &&
-                        <p><b>Edit tool</b> — {HELP_MESSAGE_TOOL_DELETE_OVERLAP}</p>
+                        <p><b>Delete path tool</b> — {HELP_MESSAGE_TOOL_DELETE_PATH}</p>
                     }
                 </div>
                 <DrawToolOptions />
@@ -217,10 +219,6 @@ function EditorControlPanelPolygon (props) {
             </div>
         </div>
     );
-
-    function setTool (selectedTool) {
-        setEditorSelectedTool(editor.selectedTool === selectedTool ? null : selectedTool);
-    }
 }
 
 export default EditorControlPanelPolygon;
