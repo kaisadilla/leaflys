@@ -1,7 +1,8 @@
 import React from 'react';
 import LeafletMap from './LeafletMap';
 
-function EditorMap (props) {
+function EditorMap () {
+
     return (
         <div className="editor-panel-map">
             <LeafletMap />

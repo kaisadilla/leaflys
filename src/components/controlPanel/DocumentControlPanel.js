@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../../elements/Button';
 import Switch from '../../elements/Switch';
 import { useDocumentContext } from '../../logic/useDocumentContext';
+import { useEventContext } from '../../logic/useEventContext';
 import NewPolygonDialog from '../dialogs/NewPolygonDialog';
 import FeatureCollection from '../FeatureCollection';
 import OverlayImagesSection from '../OverlayImagesSection';
@@ -19,6 +20,8 @@ function DocumentControlPanel () {
     const {
         setCategoryEnabled,
     } = useDocumentContext();
+
+    const { keys } = useEventContext();
 
     const $polygonCollections = getPolygonCategories().map(cat => (
         <React.Fragment key={cat}>
@@ -46,7 +49,7 @@ function DocumentControlPanel () {
         setDialogNewPolygon(true);
     };
     // #endregion
-
+    
     return (
         <>
             <div className="editor-control-panel">
@@ -73,6 +76,7 @@ function DocumentControlPanel () {
                     </h1>
                     {$polygonCollections}
                 </div>
+                Pressed Z: {keys.z ? "true" : "false"}
             </div>
             <NewPolygonDialog
                 isOpen={dialogNewPolygon}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDocumentContext } from "../logic/useDocumentContext";
-import { POLYGON_EDITOR_TOOLS, useUIContext } from "../logic/useUIContext";
+import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from "../logic/useUIContext";
 import L from "leaflet";
 import {
     ImageOverlay, MapContainer, TileLayer, GeoJSON, Marker,
@@ -10,13 +10,13 @@ import turf from "turf";
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import transformTranslate from '@turf/transform-translate';
 import { MathUtil } from "../util/MathHelper";
-import { ToLeaflet } from "../util/TurfLeafletConversion";
+import { ToGeoJSON, ToLeaflet } from "../util/TurfLeafletConversion";
+import { useEventContext } from "../logic/useEventContext";
 
 const useLeafletElementContainer = () => {
-    const { document, layoutImages, flags } = useDocumentContext();
+    const { document, layoutImages, flags: docFlags } = useDocumentContext();
 
     const {
-        specialKeys,
         editedFeatureIndex,
         editedFeatureSubpolygonIndex,
         editedFeature,
@@ -24,13 +24,15 @@ const useLeafletElementContainer = () => {
         setEditedFeatureSubpolygonIndex,
         setEditedFeature,
         setEditorSelectedTool,
-        forceEditorUpdateFlag,
+        flags: uiFlags,
     } = useUIContext();
+
+    const { keys } = useEventContext();
 
     const ICON_EDIT_VERTICES = L.divIcon({
         className: "leaflet-bullet-marker edit-layer-marker-vertex",
         iconSize: [editor.markerSize, editor.markerSize]
-    }); // TODO: Dynamic.
+    });
     const ICON_EDIT_POINTER = L.divIcon({
         className: "leaflet-bullet-marker edit-layer-marker-add",
         iconSize: [editor.markerSize, editor.markerSize]
@@ -38,7 +40,7 @@ const useLeafletElementContainer = () => {
     const ICON_EDIT_VERTEX_MIDPOINT = L.divIcon({
         className: "leaflet-bullet-marker edit-layer-marker-vertex",
         iconSize: [editor.markerSize * 0.625, editor.markerSize * 0.625]
-    }); // TODO: Dynamic
+    });
     const ICON_CHOSEN_POINTER = L.divIcon({
         className: "leaflet-bullet-marker edit-layer-marker-chosen",
         iconSize: [editor.markerSize * 2, editor.markerSize * 2],
@@ -70,7 +72,7 @@ const useLeafletElementContainer = () => {
     const [editPolygonFlag, setEditPolygonFlag] = useState(false);
     
     /** If true, adding the current vertex will finish the shape and deselect the current editing tool. */
-    let finishingVertex = false;
+    const [finishingVertex, setFinishingVertex] = useState(false);
 
     useEffect(() => {
         setEditPolygonFlag(!editPolygonFlag);
@@ -85,15 +87,15 @@ const useLeafletElementContainer = () => {
         console.info("[DEBUG] Background polygons rerendered.");
         buildBackgroundPolygonObjects();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [flags.documentLoaded, flags.polygonsChanged, editedFeatureIndex]);
+    }, [docFlags.documentLoaded, docFlags.polygonsChanged, editedFeatureIndex]);
 
     useEffect(() => {
         console.info("[DEBUG] Edited polygon rerendered.");
         buildEditedPolygonObjects();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-        flags.documentLoaded,
-        flags.polygonsChanged,
+        docFlags.documentLoaded,
+        docFlags.polygonsChanged,
         editPolygonFlag,
         editedFeatureIndex,
         editedFeatureSubpolygonIndex,
@@ -107,8 +109,8 @@ const useLeafletElementContainer = () => {
         buildEditUI();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-        flags.documentLoaded,
-        flags.polygonsChanged,
+        docFlags.documentLoaded,
+        docFlags.polygonsChanged,
         editPolygonFlag,
         editedFeatureIndex,
         editedFeatureSubpolygonIndex,
@@ -297,7 +299,7 @@ const useLeafletElementContainer = () => {
             <Marker key="marker-add" position={editMarkerCoords} icon={ICON_EDIT_POINTER}>
                 {
                     polygon[0].length > 2 &&
-                    !specialKeys.ctrl &&
+                    !keys.ctrl &&
                     <Tooltip permanent={true} direction="bottom" offset={[0, 10]} className="edit-layer-marker-tooltip">
                         Click on the first point to finish.
                     </Tooltip>
@@ -591,11 +593,10 @@ const useLeafletElementContainer = () => {
                 if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
                     if (finishingVertex) {
                         setEditorSelectedTool(null);
+                        setFinishingVertex(false);
                     }
                     else {
-                        const updatedFeature = { ...editedFeature };
-                        updatedFeature.polygons[editedFeatureSubpolygonIndex][0].push(editMarkerCoords);
-                        setEditedFeature(updatedFeature);
+                        _addVertexToEditedPolygon();
                     }
                     setEditPolygonFlag(!editPolygonFlag);
                 }
@@ -612,8 +613,8 @@ const useLeafletElementContainer = () => {
             }
 
             const currentSubpoly = editedFeature.polygons[editedFeatureSubpolygonIndex][0];
-            const straightLineMode = specialKeys.shift;
-            const snapDisabledByKey = specialKeys.ctrl;
+            const straightLineMode = keys.shift;
+            const snapDisabledByKey = keys.ctrl;
 
             let markerPos = undefined; // when this variable is assigned, no further attempts to snap will be made.
             let snappedToWhat = undefined; // what the cursor snapped to.
@@ -658,11 +659,11 @@ const useLeafletElementContainer = () => {
                     const lFirstCoord = lFinishPoint;
                     const pxFirst = map.latLngToLayerPoint(lFirstCoord);
                     if (MathUtil.vec2distance(pxCursor, pxFirst) < editor.snapDistance) {
-                        finishingVertex = true;
+                        setFinishingVertex(true);
                         markerPos = lFirstCoord;
                     }
                     else {
-                        finishingVertex = false;
+                        setFinishingVertex(false);
                     }
                 }
 
@@ -698,8 +699,11 @@ const useLeafletElementContainer = () => {
             // if we still don't have a marker pos, then it's the cursor's pos.
             markerPos ??= e.latlng;
             setEditMarkerCoords(markerPos);
-            
-            // TODO: whatever goes here with mouseLeft.
+
+            if (keys.z && lastVertex && markerPos) {
+                _leftMouseInteraction(lastVertex, markerPos, snappedToWhat);
+            }
+
         }
 
         const map = useMapEvents({
@@ -722,8 +726,43 @@ const useLeafletElementContainer = () => {
         $editionElementsDraw,
         getEnabledPolygons,
         getForeignPolygons,
+        map,
         setMap,
         LeafletEditInteraction,
+        editPolygonFlag,
+        setEditPolygonFlag,
+        editMarkerCoords,
+        setEditMarkerCoords,
+        editSnapVertices,
+        editSnapRings,
+    }
+
+    /**
+     * Adds a vertex at the end of the currently edited subpolygon, in the position,
+     * defined by the editMarkerCoords variable.
+     */
+    function _addVertexToEditedPolygon () {
+        const updatedFeature = structuredClone(editedFeature);
+        updatedFeature.polygons[editedFeatureSubpolygonIndex][0].push(editMarkerCoords);
+        setEditedFeature(updatedFeature);
+    }
+
+    function _leftMouseInteraction (lastVertex, markerPos, snappedToWhat) {
+        if (editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.draw) {
+            const pxLast = map.latLngToLayerPoint(lastVertex);
+            const pxMarker = map.latLngToLayerPoint(markerPos);
+
+            if (MathUtil.vec2distance(pxLast, pxMarker) > editor.pencilStep) {
+                _addVertexToEditedPolygon();
+            }
+        }
+        else if (editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.snap
+            && snappedToWhat === "vertex"
+        ) {
+            if (!(lastVertex.lat === markerPos.lat && lastVertex.lng === markerPos.lng)) {
+                _addVertexToEditedPolygon();
+            }
+        }
     }
 }
 

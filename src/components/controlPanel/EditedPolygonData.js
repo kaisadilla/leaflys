@@ -10,7 +10,6 @@ function EditedPolygonData () {
     const [ vertexCount, setVertexCount ] = useState(0);
 
     useEffect(() => {
-        console.log(editedFeature.polygons);
         setArea(calculateEditedArea(editedFeature.polygons));
         setVertexCount(calculateEditedVertices(editedFeature.polygons));
     }, [editedFeature]);

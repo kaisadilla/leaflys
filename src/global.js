@@ -9,6 +9,10 @@ export const DEFAULT_MAP_CENTER = [18, 40];
 export const DEFAULT_EDITOR_OVERLAY_LAT = 2.5;
 export const DEFAULT_EDITOR_OVERLAY_LONG = 14;
 
+export const DEFAULT_SNAP_DISTANCE = 25;
+export const DEFAULT_MARKER_SIZE = 12;
+export const DEFAULT_PENCIL_STEP = 20;
+
 export const POLYGON_EDITOR_SNAP_DISTANCE = {
     min: 0,
     max: 100,

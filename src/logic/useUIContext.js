@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
+import { DEFAULT_MARKER_SIZE, DEFAULT_PENCIL_STEP, DEFAULT_SNAP_DISTANCE } from "../global";
 import { ToLeaflet } from "../util/TurfLeafletConversion";
 
 export const EDITOR_MODES = {
@@ -47,10 +48,6 @@ export const useUIContext = () => useContext(UIContext);
 
 export const UIContextProvider = ({ children }) => {
     const [state, setState] = useState({
-        specialKeys: {
-            shift: false,
-            ctrl: false,
-        },
         editorMode: EDITOR_MODES.mapEditor,
         editedFeatureIndex: null,
         /** The index of the subpolygon inside the multipolygon feature */
@@ -61,29 +58,16 @@ export const UIContextProvider = ({ children }) => {
             selectedToolMode: null,
             snap: true,
             showForeignFeatures: true,
-            snapDistance: 25,
-            markerSize: 12,
-            pencilStep: 40,
+            snapDistance: DEFAULT_SNAP_DISTANCE,
+            markerSize: DEFAULT_MARKER_SIZE,
+            pencilStep: DEFAULT_PENCIL_STEP,
         },
-        forceEditorUpdateFlag: false,
+        flags: {
+            editorUpdate: false,
+        }
     });
 
     const value = useMemo(() => {
-        const setShiftPressed = pressed => setState({
-            ...state,
-            specialKeys: {
-                ...state.specialKeys,
-                shift: pressed,
-            }
-        });
-        const setCtrlPressed = pressed => setState({
-            ...state,
-            specialKeys: {
-                ...state.specialKeys,
-                ctrl: pressed,
-            }
-        });
-
         const setEditorMode = mode => setState({
             ...state,
             editorMode: mode,
@@ -146,7 +130,10 @@ export const UIContextProvider = ({ children }) => {
                     ...state.editedFeature,
                     polygons: ToLeaflet.polygon(geojsonFeature),
                 },
-                forceEditorUpdateFlag: !state.forceEditorUpdateFlag,
+                flags: {
+                    ...state.flags,
+                    editorUpdate: !state.flags.editorUpdate,
+                }
             });
         }
 
@@ -208,8 +195,6 @@ export const UIContextProvider = ({ children }) => {
 
         return {
             ...state,
-            setShiftPressed,
-            setCtrlPressed,
             setEditorMode,
             setEditedFeatureIndex,
             setEditedFeatureSubpolygonIndex,

@@ -1,6 +1,9 @@
 //import './App.css';
+import { useEffect } from "react";
+import Input from "./components/Input";
 import { SUPPRESS_CONSOLE_ERROR, SUPPRESS_CONSOLE_WARNING } from "./config";
 import { DocumentContextProvider } from "./logic/useDocumentContext";
+import { EventContextProvider } from "./logic/useEventContext";
 import { UIContextProvider } from "./logic/useUIContext";
 import Editor from "./pages/Editor";
 import "./styles/app.scss";
@@ -10,11 +13,14 @@ function App () {
 
     return (
         <div className="app">
-            <UIContextProvider>
-                <DocumentContextProvider>
-                    <Editor />
-                </DocumentContextProvider>
-            </UIContextProvider>
+            <DocumentContextProvider>
+                <UIContextProvider>
+                    <EventContextProvider>
+                        <Editor />
+                        <Input />
+                    </EventContextProvider>
+                </UIContextProvider>
+            </DocumentContextProvider>
         </div>
     );
 }
