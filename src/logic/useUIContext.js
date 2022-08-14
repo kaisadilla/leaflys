@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
+import { calculateEditedArea } from "./Leaflys";
 import { Turflet } from "./Turflet";
 
 export const EDITOR_MODES = {
@@ -122,16 +123,20 @@ export const UIContextProvider = ({ children }) => {
             editedFeatureSubpolygonIndex: index,
         });
         
-        const setEditedFeature = feature => setState({
-            ...state,
-            editedFeature: feature,
-        });
+        const setEditedFeature = feature => {
+            setState({
+                ...state,
+                editedFeature: feature,
+            });
+        };
         
-        const setEditedFeatureAndSubindex = (feature, subindex) => setState({
-            ...state,
-            editedFeature: feature,
-            editedFeatureSubpolygonIndex: subindex,
-        });
+        const setEditedFeatureAndSubindex = (feature, subindex) => {
+            setState({
+                ...state,
+                editedFeature: feature,
+                editedFeatureSubpolygonIndex: subindex,
+            });
+        };
 
         const setEditedFeatureGeometry = (geojsonFeature) => {
             setState({

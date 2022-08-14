@@ -52,3 +52,11 @@ export const HELP_MESSAGE_TOOL_DELETE_PATH =
 export const HELP_MESSAGE_TOOL_DELETE_OVERLAP =
     "Select another polygon by clicking it on the map or choosing it on " +
     "the menu below. Then press \"Carve\" to cut that polygon from yours!";
+
+export const HELP_MESSAGE_TOOL_DRAW_DRAW_LINE =
+    "Press and hold left click to draw a line of vertices. To move the " +
+    "map while in this mode, simply hold Ctrl before dragging the map.";
+
+export const HELP_MESSAGE_TOOL_DRAW_SNAP =
+    "Press and hold left click. When you move your mouse near a foreign " +
+    "vertex, a vertex will be placed."

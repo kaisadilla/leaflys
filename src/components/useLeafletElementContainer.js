@@ -43,6 +43,10 @@ const useLeafletElementContainer = () => {
         className: "leaflet-bullet-marker edit-layer-marker-chosen",
         iconSize: [editor.markerSize * 2, editor.markerSize * 2],
     });
+    const ICON_DELETE = L.icon({
+        iconUrl: "img/marker_delete.png",
+        iconSize: [editor.markerSize * 1.25, editor.markerSize * 1.25],
+    });
 
     /*** leaflet map and elements drawn to it. */
     const [map, setMap] = useState(null);
@@ -180,6 +184,9 @@ const useLeafletElementContainer = () => {
                     }
                     else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.edit) {
                         subpolys.push(buildPolygon_edit(editedFeature.polygons[i], i, key, activeColor));
+                    }
+                    else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.eraser) {
+                        subpolys.push(buildPolygon_eraser(editedFeature.polygons[i], i, key, activeColor));
                     }
                     else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart) {
                         subpolys.push(buildPolygon_selectStart(editedFeature.polygons[i], i, key, activeColor));
@@ -357,12 +364,52 @@ const useLeafletElementContainer = () => {
 
             _leafletFeatures.push(
                 <Polygon
-                    key={[key, polygon[0].length, "polygon", editPolygonFlag]}
+                    key={["edit-polygon", key, polygon[0].length, "polygon", editPolygonFlag]}
                     positions={polygon}
                     color={color}
                     stroke={false}
                 />
             );
+        }
+
+        return _leafletFeatures;
+    }
+
+    function buildPolygon_eraser (polygon, polygonIndex, key, color) {
+        const _leafletFeatures = [];
+
+        if (polygon[0].length === 0) {
+            return _leafletFeatures;
+        }
+
+        _leafletFeatures.push(
+            <Polygon
+                key={["eraser-polygon", key, polygon[0].length, "polygon", editPolygonFlag]}
+                positions={polygon}
+                color={color}
+            />
+        );
+
+        for (const r in polygon) {
+            const ring = polygon[r];
+            
+            for (const c in ring) {
+                const evt_removeVertex = {
+                    click: e => {
+                        _deleteVertexAt(c);
+                        setEditPolygonFlag(!editPolygonFlag);
+                    }
+                }
+                
+                _leafletFeatures.push(
+                    <Marker
+                        key={["delete-marker", polygonIndex, r, c]}
+                        position={ring[c]}
+                        icon={ICON_DELETE}
+                        eventHandlers={evt_removeVertex}
+                    />
+                );
+            }
         }
 
         return _leafletFeatures;
@@ -513,14 +560,20 @@ const useLeafletElementContainer = () => {
     }
 
     function _insertVertexAt (index, vertex) {
-        const newFeature = { ...editedFeature };
+        const newFeature = structuredClone(editedFeature);
         newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 0, vertex);
         setEditedFeature(newFeature);
     }
 
     function _replaceVertexAt (index, vertex) {
-        const newFeature = { ...editedFeature };
+        const newFeature = structuredClone(editedFeature);
         newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 1, vertex);
+        setEditedFeature(newFeature);
+    }
+
+    function _deleteVertexAt (index) {
+        const newFeature = structuredClone(editedFeature);
+        newFeature.polygons[editedFeatureSubpolygonIndex][0].splice(index, 1);
         setEditedFeature(newFeature);
     }
 

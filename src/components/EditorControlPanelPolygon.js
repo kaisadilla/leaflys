@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../elements/Button';
 import Checkbox from '../elements/Checkbox';
 import InputCombo from '../elements/InputCombo';
@@ -11,6 +11,8 @@ import { Turflet } from '../logic/Turflet';
 import DrawToolOptions from './toolOptions/DrawToolOptions';
 import { HELP_MESSAGE_TOOL_CUT, HELP_MESSAGE_TOOL_DELETE_OVERLAP, HELP_MESSAGE_TOOL_DELETE_PATH, HELP_MESSAGE_TOOL_DRAW, HELP_MESSAGE_TOOL_EDIT, HELP_MESSAGE_TOOL_ERASER, HELP_MESSAGE_TOOL_MOVE, HELP_MESSAGE_TOOL_SELECT_START } from '../global';
 import DeleteOverlapOptions from './toolOptions/DeleteOverlapOptions';
+import DeleteCornersOptions from './toolOptions/DeleteCornersOptions';
+import { calculateEditedArea, calculateEditedVertices } from '../logic/Leaflys';
 
 function EditorControlPanelPolygon (props) {
     const { document, updatePolygon } = useDocumentContext();
@@ -25,6 +27,9 @@ function EditorControlPanelPolygon (props) {
         setEditedFeatureAndSubindex,
         setEditorSelectedTool,
     } = useUIContext();
+
+    const [ area, setArea ] = useState(0);
+    const [ vertexCount, setVertexCount ] = useState(0);
 
     const $subPolygons = editedFeature.polygons.map((p, i) => (
         <Button
@@ -86,6 +91,12 @@ function EditorControlPanelPolygon (props) {
         }, editedFeature.polygons.length);
     }
     // #endregion
+
+    useEffect(() => {
+        console.log(editedFeature.polygons);
+        setArea(calculateEditedArea(editedFeature.polygons));
+        setVertexCount(calculateEditedVertices(editedFeature.polygons));
+    }, [editedFeature]);
 
     return (
         <div className="editor-control-panel">
@@ -190,11 +201,6 @@ function EditorControlPanelPolygon (props) {
                     }
                     {
                         // TODO: REMOVE
-                        editor.selectedTool === POLYGON_EDITOR_TOOLS.eraser &&
-                        <p><b>Delete vertex tool</b> — {HELP_MESSAGE_TOOL_ERASER}</p>
-                    }
-                    {
-                        // TODO: REMOVE
                         editor.selectedTool === POLYGON_EDITOR_TOOLS.move &&
                         <p><b>Move tool</b> — {HELP_MESSAGE_TOOL_MOVE}</p>
                     }
@@ -210,23 +216,25 @@ function EditorControlPanelPolygon (props) {
                     }
                 </div>
                 <DrawToolOptions />
+                <DeleteCornersOptions />
                 <DeleteOverlapOptions />
                 <h2 className="control-panel-header">Data</h2>
                 <div className="data">
                     <div className="data-piece">
                         <span className="name">Area: </span>
-                        <span className="value">{MathHelper.toString(42)} km²</span>
+                        <span className="value">
+                            {MathHelper.toString(area / 1_000_000)} km²
+                        </span>
                     </div>
                     <div className="data-piece">
                         <span className="name">Vertices: </span>
-                        <span className="value">{73} vertices</span>
+                        <span className="value">{vertexCount} vertices</span>
                     </div>
                 </div>
                 <h2 className="control-panel-header">TO-DO</h2>
                 <ul className="todo" style={{textAlign: "left"}}>
-                    <li>Remove placeholder data from Data section and replace it with real data.</li>
-                    <li>Count how many vertices the shape has, with an option to reduce them.</li>
-                    <li>Handle the error that occurs when saving a Polygon with less than 4 Positions.</li>
+                    <li>Tool to reduce the total amount of corners in a polygon..</li>
+                    <li>Handle the error that occurs when saving a polygon with less than 4 Positions.</li>
                 </ul>
             </div>
         </div>
