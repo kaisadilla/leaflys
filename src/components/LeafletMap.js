@@ -5,7 +5,7 @@ import { DEFAULT_MAP_CENTER, DEFAULT_ZOOM } from '../global';
 import "leaflet/dist/leaflet.css";
 import LeafletElementContainer from './LeafletElementContainer';
 
-function LeafletMap (props) {
+function LeafletMap () {
     console.info("[DEBUG] Leaflet map rerendered!");
 
     return (
@@ -13,6 +13,7 @@ function LeafletMap (props) {
             className="map-frame"
             center={DEFAULT_MAP_CENTER}
             zoom={DEFAULT_ZOOM}
+            zoomSnap={1}
         >
             <LayersControl>
                 <LayersControl.BaseLayer name="map" checked>

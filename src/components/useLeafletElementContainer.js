@@ -9,11 +9,11 @@ import {
 import turf from "turf";
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import transformTranslate from '@turf/transform-translate';
-import { MathHelper } from "../helpers/MathHelper";
-import { Turflet } from "../logic/Turflet";
+import { MathUtil } from "../util/MathHelper";
+import { ToLeaflet } from "../util/TurfLeafletConversion";
 
 const useLeafletElementContainer = () => {
-    const { document, layoutImages, forceReloadFlag, forceRedraw } = useDocumentContext();
+    const { document, layoutImages, flags } = useDocumentContext();
 
     const {
         specialKeys,
@@ -84,14 +84,16 @@ const useLeafletElementContainer = () => {
     useEffect(() => {
         console.info("[DEBUG] Background polygons rerendered.");
         buildBackgroundPolygonObjects();
-    }, [forceReloadFlag, forceRedraw, editedFeatureIndex]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [flags.documentLoaded, flags.polygonsChanged, editedFeatureIndex]);
 
     useEffect(() => {
         console.info("[DEBUG] Edited polygon rerendered.");
         buildEditedPolygonObjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-        forceReloadFlag,
-        forceRedraw,
+        flags.documentLoaded,
+        flags.polygonsChanged,
         editPolygonFlag,
         editedFeatureIndex,
         editedFeatureSubpolygonIndex,
@@ -99,16 +101,19 @@ const useLeafletElementContainer = () => {
         editor.markerSize,
     ]);
 
+    const updateMarkerCoords = editor.selectedTool === POLYGON_EDITOR_TOOLS.draw && editMarkerCoords;
     useEffect(() => {
+        //console.info("[DEBUG] Edit artifacts rerendered.");
         buildEditUI();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-        forceReloadFlag,
-        forceRedraw,
+        flags.documentLoaded,
+        flags.polygonsChanged,
         editPolygonFlag,
         editedFeatureIndex,
         editedFeatureSubpolygonIndex,
         editor.selectedTool,
-        editor.selectedTool === POLYGON_EDITOR_TOOLS.draw && editMarkerCoords,
+        updateMarkerCoords,
         editor.markerSize,
     ]);
 
@@ -652,7 +657,7 @@ const useLeafletElementContainer = () => {
                 if (lFinishPoint) {
                     const lFirstCoord = lFinishPoint;
                     const pxFirst = map.latLngToLayerPoint(lFirstCoord);
-                    if (MathHelper.vec2distance(pxCursor, pxFirst) < editor.snapDistance) {
+                    if (MathUtil.vec2distance(pxCursor, pxFirst) < editor.snapDistance) {
                         finishingVertex = true;
                         markerPos = lFirstCoord;
                     }
@@ -669,10 +674,10 @@ const useLeafletElementContainer = () => {
 
                     // snap to vertex
                     if (nearestPoint) {
-                        const lNearest = Turflet.coord.arrayToObject(nearestPoint.geometry.coordinates);
+                        const lNearest = ToLeaflet.coord(nearestPoint.geometry.coordinates);
                         const pxNearest = map.latLngToLayerPoint(lNearest);
 
-                        if (MathHelper.vec2distance(pxCursor, pxNearest) < editor.snapDistance) {
+                        if (MathUtil.vec2distance(pxCursor, pxNearest) < editor.snapDistance) {
                             markerPos = lNearest;
                             snappedToWhat = "vertex";
                         }
@@ -680,10 +685,10 @@ const useLeafletElementContainer = () => {
                     // snap to perimeter
                     if (!markerPos) {
                         const nearestInLine = nearestPointOnLine(editSnapRings, turfCursor);
-                        const lNearestInLine = Turflet.coord.arrayToObject(nearestInLine.geometry.coordinates);
+                        const lNearestInLine = ToLeaflet.coord(nearestInLine.geometry.coordinates);
                         const pxNearestInLine = map.latLngToLayerPoint(lNearestInLine);
 
-                        if (MathHelper.vec2distance(pxCursor, pxNearestInLine) < editor.snapDistance) {
+                        if (MathUtil.vec2distance(pxCursor, pxNearestInLine) < editor.snapDistance) {
                             markerPos = lNearestInLine;
                         }
                     }

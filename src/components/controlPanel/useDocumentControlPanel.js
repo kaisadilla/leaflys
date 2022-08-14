@@ -1,25 +1,25 @@
 import { useLayoutEffect, useState } from "react";
-import fileDialog from "file-dialog";
-import { Buffer } from "buffer";
-import { useDocumentContext } from "../logic/useDocumentContext";
+import { useDocumentContext } from "../../logic/useDocumentContext";
 
-const useEditorControlPanel = () => {
+const useDocumentControlPanel = () => {
     const {
         document,
         isCategoryEnabled,
-        addLayoutImage,
     } = useDocumentContext();
 
     const [isPolygonSectionEnabled, setPolygonSectionEnabled] = useState(true);
-    const [isPolygonCategoryEnabled, setPolygonCategoryEnabled] = useState([]);
+    const [isPolygonCategoryEnabled, setPolygonCategoryEnabled] = useState({});
 
     useLayoutEffect(() => {
         setPolygonSectionEnabled(() => isCategoryEnabled("polygons", null));
+
+        const enabledCats = {};
+        for (const c of getPolygonCategories()) {
+            enabledCats[c] = isCategoryEnabled("polygons", c);
+        }
         
-        const enabledCats = getPolygonCategories().map(c => {
-            return isCategoryEnabled("polygons", c);
-        });
         setPolygonCategoryEnabled(enabledCats);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [document.features.polygons]);
 
     /**
@@ -37,27 +37,11 @@ const useEditorControlPanel = () => {
         return [...setCats].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
     }
 
-    /**
-     * Loads a Leaflys document as the document for the editor.
-     */
-    function loadLayoutImage () {
-        fileDialog().then(file => {
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(file[0]);
-            reader.onload = e => {
-                const img64 = Buffer.from(e.target.result, "binary").toString("base64");
-                addLayoutImage(file[0].name, img64);
-                console.info(`[DEBUG] Loaded new layout image! (${file[0].name}, length: ${img64.length})`);
-            };
-        });
-    }
-
     return {
         isPolygonSectionEnabled,
         isPolygonCategoryEnabled,
         getPolygonCategories,
-        loadLayoutImage,
     }
 }
 
-export default useEditorControlPanel;
+export default useDocumentControlPanel;

@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import DocumentHelper from "../helpers/DocumentHelper";
+import DocumentUtil from "../util/DocumentUtil";
 
 const DocumentContext = createContext(null);
 export const useDocumentContext = () => useContext(DocumentContext);
@@ -8,11 +8,14 @@ export const DocumentContextProvider = ({ children }) => {
     const [state, setState] = useState({
         document: _getInitialDocument(),
         layoutImages: [],
+        flags: {
+            documentLoaded: false,
+            polygonsChanged: false,
+        },
         /**
          * useEffect statements can subscribe to this flag to update when the document
          * is substantially changed (e.g. when loading a new document). */
         forceReloadFlag: false,
-        forceRedrawFlag: false,
     });
 
     const value = useMemo(() => {
@@ -24,15 +27,18 @@ export const DocumentContextProvider = ({ children }) => {
             setState({
                 ...state,
                 document,
-                forceReloadFlag: !state.forceReloadFlag,
-                forceRedrawFlag: !state.forceRedrawFlag,
+                flags: {
+                    ...state.flags,
+                    documentLoaded: !state.flags.documentLoaded,
+                    polygonsChanged: !state.flags.polygonsChanged,
+                },
             });
         }
 
         const addLayoutImage = (fileName, imgBase64) => {
             const layoutImages = [
                 ...state.layoutImages,
-                DocumentHelper.getNew.layoutImage(fileName, imgBase64),
+                DocumentUtil.getNew.layoutImage(fileName, imgBase64),
             ];
             setState({
                 ...state,
@@ -71,13 +77,16 @@ export const DocumentContextProvider = ({ children }) => {
          * @param {*} id The id of the polygon.
          */
         const addNewPolygon = (name, category, id) => {
-            const newFeature = DocumentHelper.getNew.polygon(name, category, id);
+            const newFeature = DocumentUtil.getNew.polygon(name, category, id);
             const newState = structuredClone(state);
             newState.document.features.polygons.push(newFeature);
 
             setState({
                 ...newState,
-                forceReloadFlag: !state.forceReloadFlag,
+                flags: {
+                    ...state.flags,
+                    polygonsChanged: !state.flags.polygonsChanged,
+                },
             });
         };
 
@@ -93,7 +102,10 @@ export const DocumentContextProvider = ({ children }) => {
 
             setState({
                 ...newState,
-                forceReloadFlag: !state.forceReloadFlag,
+                flags: {
+                    ...state.flags,
+                    polygonsChanged: !state.flags.polygonsChanged,
+                },
             });
         };
 
@@ -108,7 +120,10 @@ export const DocumentContextProvider = ({ children }) => {
 
             setState({
                 ...newState,
-                forceReloadFlag: !state.forceReloadFlag,
+                flags: {
+                    ...state.flags,
+                    polygonsChanged: !state.flags.polygonsChanged,
+                },
             });
         };
 
@@ -157,7 +172,10 @@ export const DocumentContextProvider = ({ children }) => {
 
             setState({
                 ...newState,
-                forceReloadFlag: !state.forceReloadFlag
+                flags: {
+                    ...state.flags,
+                    polygonsChanged: !state.flags.polygonsChanged,
+                },
             });
         }
 
@@ -181,25 +199,13 @@ export const DocumentContextProvider = ({ children }) => {
             {children}
         </DocumentContext.Provider>
     )
+
+    /**
+     * Returns a document in the local storage if there's any,
+     * or a sample document if there isn't.
+     */
+    function _getInitialDocument () {
+        // TODO: Read local storage.
+        return DocumentUtil.getExample.document();
+    }
 };
-
-/**
- * Returns a document in the local storage if there's any,
- * or a sample document if there isn't.
- */
-function _getInitialDocument () {
-    // TODO: Read local storage.
-    return DocumentHelper.getTemplate.document();
-}
-
-/**
- * Returns the position in the array of the feature with the given id.
- * @param {*} featureArray An array of features.
- * @param {*} id The id of the feature.
- * @deprecated almost instantly
- */
-function _findFeatureById (featureArray, id) {
-    //return featureArray.some((p, i) => {
-    //    return p.id === id ? i : false;
-    //})
-}

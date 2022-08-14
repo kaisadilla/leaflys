@@ -1,6 +1,6 @@
 import fileDialog from "file-dialog";
 import { CURRENT_DOCUMENT_VERSION } from "../global";
-import DocumentHelper from "../helpers/DocumentHelper";
+import DocumentUtil from "../util/DocumentUtil";
 import updateDocument from "../logic/updateDocument";
 import { useDocumentContext } from "../logic/useDocumentContext";
 
@@ -31,7 +31,7 @@ const useNavBar = () => {
      */
     function saveDocument () {
         const json = JSON.stringify(document, null, 4);
-        DocumentHelper.saveAsFile(`leaflys-document.json`, DocumentHelper.formatGeojsonCoords(json));
+        DocumentUtil.saveAsFile(`leaflys-document.json`, DocumentUtil.formatGeojsonCoords(json));
     }
 
     return {

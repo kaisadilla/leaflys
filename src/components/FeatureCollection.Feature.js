@@ -4,7 +4,7 @@ import SpanButton from '../elements/SpanButton';
 import Switch from '../elements/Switch';
 import DormantTextbox from '../elements/DormantTextbox';
 import Button from '../elements/Button';
-import DocumentHelper from '../helpers/DocumentHelper';
+import DocumentUtil from '../util/DocumentUtil';
 import { useUIContext } from '../logic/useUIContext';
 import { useDocumentContext } from '../logic/useDocumentContext';
 import ConfirmDialog from '../elements/ConfirmDialog';
@@ -91,16 +91,16 @@ function FeatureCollection_Feature(props) {
 }
 
 function copyFeature (geojson) {
-    DocumentHelper.copyToClipboard(encodedGeojson(geojson));
+    DocumentUtil.copyToClipboard(encodedGeojson(geojson));
 }
 
 function exportFeature (fileName, geojson) {
-    DocumentHelper.saveAsFile(`${fileName}.geojson`, encodedGeojson(geojson));
+    DocumentUtil.saveAsFile(`${fileName}.geojson`, encodedGeojson(geojson));
 }
 
 function encodedGeojson (geojson) {
     const rawJson = JSON.stringify(geojson, null, 4);
-    return DocumentHelper.formatGeojsonCoords(rawJson);
+    return DocumentUtil.formatGeojsonCoords(rawJson);
 }
 
 export default FeatureCollection_Feature;

@@ -1,31 +1,26 @@
 import React, { useState } from 'react';
-import Button from '../elements/Button';
-import CollapsableBlock from '../elements/CollapsableBlock';
-import Switch from '../elements/Switch';
-import { useDocumentContext } from '../logic/useDocumentContext';
-import NewPolygonDialog from './dialogs/NewPolygonDialog';
-import FeatureCollection from './FeatureCollection';
-import OverlayImagePanel from './OverlayImagePanel';
-import useEditorControlPanel from './useEditorControlPanelMain';
+import Button from '../../elements/Button';
+import Switch from '../../elements/Switch';
+import { useDocumentContext } from '../../logic/useDocumentContext';
+import NewPolygonDialog from '../dialogs/NewPolygonDialog';
+import FeatureCollection from '../FeatureCollection';
+import OverlayImagesSection from '../OverlayImagesSection';
+import useDocumentControlPanel from './useDocumentControlPanel';
 
-function EditorControlPanelMain (props) {
+function DocumentControlPanel () {
     const [dialogNewPolygon, setDialogNewPolygon] = useState(false);
 
     const {
         isPolygonSectionEnabled,
         isPolygonCategoryEnabled,
         getPolygonCategories,
-        loadLayoutImage,
-    } = useEditorControlPanel();
+    } = useDocumentControlPanel();
 
     const {
         setCategoryEnabled,
-        layoutImages,
     } = useDocumentContext();
 
-    const polygonCategories = getPolygonCategories();
-
-    const $polygonCollections = polygonCategories.map(cat => (
+    const $polygonCollections = getPolygonCategories().map(cat => (
         <React.Fragment key={cat}>
             <h2 className="toggle-header control-panel-header">
                 <Switch
@@ -35,31 +30,35 @@ function EditorControlPanelMain (props) {
                 />
                 <span>{cat}</span>
             </h2>
-            <FeatureCollection typeFilter={["Polygon", "MultiPolygon"]} categoryFilter={[cat]} addButton />
+            <FeatureCollection
+                typeFilter={["Polygon", "MultiPolygon"]}
+                categoryFilter={[cat]}
+                addButton
+            />
         </React.Fragment>
     ));
 
-    const $layoutImages = layoutImages.map((img, i) => {
-        return <OverlayImagePanel key={i} imageIndex={i} />
-    });
+    // #region Events
+    const evt_enablePolygons = evt => {
+        setCategoryEnabled("polygons", null, evt.target.checked);
+    }
+    const evt_newPolygon = evt => {
+        setDialogNewPolygon(true);
+    };
+    // #endregion
 
     return (
         <>
             <div className="editor-control-panel">
                 <div className="control-panel">
                     <h1 className="control-panel-header">Document</h1>
-                    <CollapsableBlock className="collapsable-section" header={`Overlay images (${layoutImages.length})`}>
-                        {$layoutImages}
-                        <div className="control-collection align-right" style={{width: "100%"}}>
-                            <Button baseStyle="success" icon="add" onClick={loadLayoutImage}/>
-                        </div>
-                    </CollapsableBlock>
+                    <OverlayImagesSection />
                     <h1 className="collection-section control-panel-header">
                         <div className="left">
                             <Switch
                                 id="enable-all"
                                 checked={isPolygonSectionEnabled}
-                                onChange={e => setCategoryEnabled("polygons", null, e.target.checked)}
+                                onChange={evt_enablePolygons}
                             />
                         </div>
                         <div className="center">
@@ -68,7 +67,7 @@ function EditorControlPanelMain (props) {
                         <div className="right">
                             <div className="control-panel-button-collection">
                                 <Button baseStyle="clear" label="Export section" />
-                                <Button baseStyle="success" icon="add" onClick={() => setDialogNewPolygon(true)} />
+                                <Button baseStyle="success" icon="add" onClick={evt_newPolygon} />
                             </div>
                         </div>
                     </h1>
@@ -83,4 +82,4 @@ function EditorControlPanelMain (props) {
     );
 }
 
-export default EditorControlPanelMain;
+export default DocumentControlPanel;

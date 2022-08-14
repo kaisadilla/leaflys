@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import Button from '../../elements/Button';
 import Dialog from '../../elements/Dialog';
 import InputCombo from '../../elements/InputCombo';
@@ -13,7 +13,7 @@ function NewPolygonDialog (props) {
     const [category, setCategory] = useState(null);
     const [id, setId] = useState(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setName("New polygon");
         setCategory("default");
         setId(crypto.randomUUID());

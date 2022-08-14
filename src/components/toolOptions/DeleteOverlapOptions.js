@@ -7,9 +7,9 @@ import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '.
 import { HELP_MESSAGE_TOOL_DELETE_OVERLAP, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
 import { useDocumentContext } from '../../logic/useDocumentContext';
 import Dropdown from '../../elements/Dropdown';
-import { Turflet } from '../../logic/Turflet';
-import { clipPolygon } from '../../logic/Leaflys';
-import { useStateCallback } from '../../helpers/useStateCallback';
+import { clipPolygon } from '../../util/Util';
+import { useStateCallback } from '../../ext/useStateCallback';
+import { ToGeoJSON } from '../../util/TurfLeafletConversion';
 
 function DeleteOverlapOptions (props) {
     const {
@@ -37,7 +37,7 @@ function DeleteOverlapOptions (props) {
 
     const evt_carve = (evt) => {
         if (selectedPoly !== null) {
-            const geojson = Turflet.polygon.leafletToGeojson(editedFeature.polygons);
+            const geojson = ToGeoJSON.polygon(editedFeature.polygons);
             const newGeojson = clipPolygon(geojson, getPolygonById(selectedPoly));
             setEditedFeatureGeometry(newGeojson);
         }

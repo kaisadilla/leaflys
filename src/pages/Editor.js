@@ -1,5 +1,5 @@
 import React from 'react';
-import EditorControlPanel from '../components/EditorControlPanel';
+import ControlPanel from '../components/controlPanel/ControlPanel';
 import EditorMap from '../components/EditorMap';
 import NavBar from '../components/NavBar';
 
@@ -8,7 +8,7 @@ function Editor (props) {
         <div className="map-editor">
             <div className="editor-tab">
                 <EditorMap />
-                <EditorControlPanel />
+                <ControlPanel />
             </div>
             <div className="editor-navbar">
                 <NavBar />

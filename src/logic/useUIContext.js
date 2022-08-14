@@ -1,6 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { calculateEditedArea } from "./Leaflys";
-import { Turflet } from "./Turflet";
+import { ToLeaflet } from "../util/TurfLeafletConversion";
 
 export const EDITOR_MODES = {
     mapEditor: 0,
@@ -39,7 +38,7 @@ function getEditedFeatureObject (feature) {
         id: feature.id,
         /** used to identify the feature in the document even if the user edits its id. */
         originalId: feature.id,
-        polygons: Turflet.polygon.geojsonToLeaflet(feature),
+        polygons: ToLeaflet.polygon(feature),
     };
 }
 
@@ -145,7 +144,7 @@ export const UIContextProvider = ({ children }) => {
                 editedFeatureSubpolygonIndex: 0,
                 editedFeature: {
                     ...state.editedFeature,
-                    polygons: Turflet.polygon.geojsonToLeaflet(geojsonFeature),
+                    polygons: ToLeaflet.polygon(geojsonFeature),
                 },
                 forceEditorUpdateFlag: !state.forceEditorUpdateFlag,
             });

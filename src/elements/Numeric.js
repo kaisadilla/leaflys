@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MathHelper } from '../helpers/MathHelper';
+import { MathUtil } from '../util/MathHelper';
 
 /**
  * Valid props:
@@ -33,8 +33,8 @@ function Numeric (props) {
         }
         else {
             const rawVal = val;
-            const truncatedVal = MathHelper.truncate(val, props.decimalPlaces);
-            const clampedVal = MathHelper.clamp(val, props.min, props.max);
+            const truncatedVal = MathUtil.truncate(val, props.decimalPlaces);
+            const clampedVal = MathUtil.clamp(val, props.min, props.max);
             props.onChange(clampedVal);
             setDisplayText(truncatedVal === clampedVal ? rawVal : clampedVal);
         }
@@ -42,8 +42,8 @@ function Numeric (props) {
 
     const evt_onBlur = (evt) => {
         let val = isNaN(evt.target.value) ? 0 : evt.target.value;
-        val = MathHelper.truncate(val, props.decimalPlaces);
-        props.onChange(MathHelper.clamp(val, props.min, props.max));
+        val = MathUtil.truncate(val, props.decimalPlaces);
+        props.onChange(MathUtil.clamp(val, props.min, props.max));
     }
 
     useEffect(() => {

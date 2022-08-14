@@ -8,6 +8,16 @@ function NavBar (props) {
     const { editorMode, setEditorMode } = useUIContext();
     const { openDocument, saveDocument } = useNavBar();
 
+    const $editorModes = Object.keys(EDITOR_MODES).map(k => (
+        <Dropdown.Item
+            key={k}
+            onClick={() => setEditorMode(EDITOR_MODES[k])}
+            selected={editorMode === EDITOR_MODES[k]}
+        >
+            {EDITOR_MODES_NAMES[EDITOR_MODES[k]]}
+        </Dropdown.Item>
+    ));
+
     return (
         <nav className="navbar">
             <Dropdown
@@ -16,19 +26,7 @@ function NavBar (props) {
                 buttonClassName="editor-mode-menu-button"
                 menuClassName="editor-mode-menu-dropdown"
             >
-                {
-                    Object.keys(EDITOR_MODES).map(k => {
-                        return (
-                            <Dropdown.Item
-                                key={k}
-                                onClick={() => setEditorMode(EDITOR_MODES[k])}
-                                selected={editorMode === EDITOR_MODES[k]}
-                            >
-                                {EDITOR_MODES_NAMES[EDITOR_MODES[k]]}
-                            </Dropdown.Item>
-                        )
-                    })
-                }
+                {$editorModes}
                 <Dropdown.Separator />
             </Dropdown>
             <div className="navbar-io-section">

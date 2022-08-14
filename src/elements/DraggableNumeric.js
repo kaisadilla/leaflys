@@ -1,5 +1,5 @@
 import React from 'react';
-import { MathHelper } from '../helpers/MathHelper';
+import { MathUtil } from '../util/MathHelper';
 import InputCombo from './InputCombo';
 import Numeric from './Numeric';
 
@@ -40,8 +40,8 @@ function DraggableNumeric (props) {
             const pxDistance = currentX - startingX;
 
             let value = startingValue + (pxDistance * dragPerPixel);
-            value = MathHelper.truncate(value, props.decimalPlaces);
-            props.setValue(MathHelper.clamp(value, props.min, props.max));
+            value = MathUtil.truncate(value, props.decimalPlaces);
+            props.setValue(MathUtil.clamp(value, props.min, props.max));
         }
 
         function onMouseUp () {

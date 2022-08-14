@@ -4,6 +4,7 @@ import { useUIContext } from '../logic/useUIContext';
 import useLeafletElementContainer from './useLeafletElementContainer';
 
 function LeafletElementContainer (props) {
+    // #region hooks
     const map = useMap();
 
     const {
@@ -16,10 +17,11 @@ function LeafletElementContainer (props) {
     } = useLeafletElementContainer();
 
     const { editedFeature } = useUIContext();
+    // #endregion
 
     useEffect(() => {
         setMap(map);
-    }, []);
+    }, [map, setMap]);
 
     return (
         <>
