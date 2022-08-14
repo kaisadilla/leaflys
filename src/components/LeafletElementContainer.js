@@ -1,21 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { CircleMarker, ImageOverlay, LayersControl, Marker, TileLayer, useMap } from 'react-leaflet';
-import useLeafletMap from './useLeafletMap';
+import React, { useEffect } from 'react';
+import { useMap } from 'react-leaflet';
 import { useUIContext } from '../logic/useUIContext';
 import useLeafletElementContainer from './useLeafletElementContainer';
-import L from "leaflet";
-import { useDocumentContext } from '../logic/useDocumentContext';
 
 function LeafletElementContainer (props) {
     const map = useMap();
-
-    const {
-        layoutImages,
-    } = useDocumentContext();
-
-    const {
-        setBuiltMap,
-    } = useLeafletMap();
 
     const {
         setMap,

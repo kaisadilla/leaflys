@@ -94,6 +94,10 @@ export const UIContextProvider = ({ children }) => {
                 setState({
                     ...state,
                     editedFeatureIndex: index,
+                    editor: {
+                        ...state.editor,
+                        selectedTool: null,
+                    }
                 });
             }
             else {
@@ -121,6 +125,12 @@ export const UIContextProvider = ({ children }) => {
         const setEditedFeature = feature => setState({
             ...state,
             editedFeature: feature,
+        });
+        
+        const setEditedFeatureAndSubindex = (feature, subindex) => setState({
+            ...state,
+            editedFeature: feature,
+            editedFeatureSubpolygonIndex: subindex,
         });
 
         const setEditedFeatureGeometry = (geojsonFeature) => {
@@ -200,6 +210,7 @@ export const UIContextProvider = ({ children }) => {
             setEditedFeatureIndex,
             setEditedFeatureSubpolygonIndex,
             setEditedFeature,
+            setEditedFeatureAndSubindex,
             setEditedFeatureGeometry,
             setEditorSelectedTool,
             setEditorSelectedToolMode,

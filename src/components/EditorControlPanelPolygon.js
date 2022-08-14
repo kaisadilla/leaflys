@@ -22,6 +22,7 @@ function EditorControlPanelPolygon (props) {
         setEditedFeatureIndex,
         setEditedFeatureSubpolygonIndex,
         setEditedFeature,
+        setEditedFeatureAndSubindex,
         setEditorSelectedTool,
     } = useUIContext();
 
@@ -43,6 +44,8 @@ function EditorControlPanelPolygon (props) {
         setEditedFeatureIndex(null);
     };
     const evt_saveEdit = () => {
+        setEditorSelectedTool(null);
+
         const geojson = Turflet.polygon.leafletToGeojson(editedFeature.polygons);
         const newFeature = { ...document.features.polygons[editedFeatureIndex] }
 
@@ -73,6 +76,15 @@ function EditorControlPanelPolygon (props) {
             id: evt.target.value,
         })
     };
+    const evt_addSubpolygon = (evt) => {
+        setEditedFeatureAndSubindex({
+            ...editedFeature,
+            polygons: [
+                ...editedFeature.polygons,
+                [[]],
+            ]
+        }, editedFeature.polygons.length);
+    }
     // #endregion
 
     return (
@@ -109,7 +121,7 @@ function EditorControlPanelPolygon (props) {
                 <div className="polygon-selector">
                     <div className="polygon-gallery">
                         {$subPolygons}
-                        <Button baseStyle="success" label="+" />
+                        <Button baseStyle="success" label="+" onClick={evt_addSubpolygon} />
                     </div>
                 </div>
                 <div className="tools-and-actions">

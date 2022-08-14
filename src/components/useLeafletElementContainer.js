@@ -82,8 +82,6 @@ const useLeafletElementContainer = () => {
         buildBackgroundPolygonObjects();
     }, [forceReloadFlag, forceRedraw, editedFeatureIndex]);
 
-    // TODO: This is inefficient. Only the elements related to the current action of
-    // the user should be updated (e.g. only the pointer and its line in edit mode).
     useEffect(() => {
         console.info("[DEBUG] Edited polygon rerendered.");
         buildEditedPolygonObjects();
@@ -92,6 +90,7 @@ const useLeafletElementContainer = () => {
         forceRedraw,
         editPolygonFlag,
         editedFeatureIndex,
+        editedFeatureSubpolygonIndex,
         editor.selectedTool,
         editor.markerSize,
     ]);
@@ -103,6 +102,7 @@ const useLeafletElementContainer = () => {
         forceRedraw,
         editPolygonFlag,
         editedFeatureIndex,
+        editedFeatureSubpolygonIndex,
         editor.selectedTool,
         editor.selectedTool === POLYGON_EDITOR_TOOLS.draw && editMarkerCoords,
         editor.markerSize,
@@ -162,49 +162,59 @@ const useLeafletElementContainer = () => {
     function buildEditedPolygonObjects () {
         if (editedFeatureIndex === null) {
             setEditedPolygons([]);
+            return;
         }
-        else {
-            const activeColor = document.settings.colors["active-color"];
-            const inactiveColor = document.settings.colors["inactive-color"];
+        
+        const activeColor = document.settings.colors["active-color"];
+        const inactiveColor = document.settings.colors["inactive-color"];
 
-            const subpolys = [];
+        const subpolys = [];
 
-            if (editedFeature !== null) {
-                for (let i = 0; i < editedFeature.polygons.length; i++) {
-                    const key = [editedFeatureIndex, editedFeature.id, editedFeatureSubpolygonIndex];
+        if (editedFeature !== null) {
+            for (let i = 0; i < editedFeature.polygons.length; i++) {
+                const key = [editedFeature.id, editedFeatureSubpolygonIndex, i];
 
-                    if (i === editedFeatureSubpolygonIndex) {
-                        if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
-                            subpolys.push(buildPolygon_draw(editedFeature.polygons[i], i, key, activeColor));
-                        }
-                        else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.edit) {
-                            subpolys.push(buildPolygon_edit(editedFeature.polygons[i], i, key, activeColor));
-                        }
-                        else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart) {
-                            subpolys.push(buildPolygon_selectStart(editedFeature.polygons[i], i, key, activeColor));
-                        }
-                        else {
-                            subpolys.push(buildPolygon_normal(editedFeature.polygons[i], i, key, activeColor));
-                        }
+                if (i === editedFeatureSubpolygonIndex) {
+                    if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
+                        subpolys.push(buildPolygon_draw(editedFeature.polygons[i], i, key, activeColor));
+                    }
+                    else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.edit) {
+                        subpolys.push(buildPolygon_edit(editedFeature.polygons[i], i, key, activeColor));
+                    }
+                    else if (editor.selectedTool === POLYGON_EDITOR_TOOLS.selectStart) {
+                        subpolys.push(buildPolygon_selectStart(editedFeature.polygons[i], i, key, activeColor));
                     }
                     else {
-                        subpolys.push(buildPolygon_normal(editedFeature.polygons[i], i, key, inactiveColor, true));
+                        subpolys.push(buildPolygon_normal(editedFeature.polygons[i], key, activeColor));
                     }
                 }
+                else {
+                    const evt_selectSubpoly = {
+                        click: (evt) => {
+                            setEditedFeatureSubpolygonIndex(i);
+                        }
+                    }
+                    subpolys.push(buildPolygon_normal(editedFeature.polygons[i], key, inactiveColor, evt_selectSubpoly));
+                }
             }
-
-            setEditedPolygons(subpolys);
         }
+
+        setEditedPolygons(subpolys);
     }
 
     function buildEditUI () {
+        if (editedFeatureIndex === null) {
+            setEditionElementsDraw([]);
+            return;
+        }
+
         const activeColor = document.settings.colors["active-color"];
 
         const features = [];
 
         if (editedFeature !== null) {
-            for(let i = 0; i < editedFeature.polygons.length; i++) {
-                    const key = [editedFeature.id, editedFeatureSubpolygonIndex];
+            for (let i = 0; i < editedFeature.polygons.length; i++) {
+                const key = [editedFeature.id, editedFeatureSubpolygonIndex];
 
                 if (i === editedFeatureSubpolygonIndex) {
                     if (editor.selectedTool === POLYGON_EDITOR_TOOLS.draw) {
@@ -217,15 +227,9 @@ const useLeafletElementContainer = () => {
         }
     }
     
-    function buildPolygon_normal (polygon, polygonIndex, key, color, clickToSelectSubpolygon = false) {
-        const eventHandlers = {
-            click: e => {
-                setEditedFeatureSubpolygonIndex(polygonIndex);
-            }
-        }
-
+    function buildPolygon_normal (polygon, key, color, eventHandlers = null) {
         return (
-            <Polygon key={key} positions={polygon} color={color} eventHandlers={clickToSelectSubpolygon ? eventHandlers : null} />
+            <Polygon key={key} positions={polygon} color={color} eventHandlers={eventHandlers} />
         );
     }
 
@@ -244,6 +248,9 @@ const useLeafletElementContainer = () => {
                         _leafletFeatures.push(
                             <Marker key={["marker", polygonIndex, r, c]} position={ring[c]} icon={ICON_EDIT_VERTICES} />
                         );
+                    }
+                    if (r !== 0) {
+                        <Marker key={["marker", polygonIndex, r, c]} position={ring[0]} icon={ICON_EDIT_VERTICES} />
                     }
                 }
 
