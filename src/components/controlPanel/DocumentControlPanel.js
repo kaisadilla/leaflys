@@ -21,8 +21,6 @@ function DocumentControlPanel () {
         setCategoryEnabled,
     } = useDocumentContext();
 
-    const { keys } = useEventContext();
-
     const $polygonCollections = getPolygonCategories().map(cat => (
         <React.Fragment key={cat}>
             <h2 className="toggle-header control-panel-header">
@@ -76,7 +74,6 @@ function DocumentControlPanel () {
                     </h1>
                     {$polygonCollections}
                 </div>
-                Pressed Z: {keys.z ? "true" : "false"}
             </div>
             <NewPolygonDialog
                 isOpen={dialogNewPolygon}

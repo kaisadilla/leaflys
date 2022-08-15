@@ -11,7 +11,7 @@ import EditedPolygonData from './EditedPolygonData';
 import DocumentUtil from '../../util/DocumentUtil';
 
 function PolygonControlPanel () {
-    const { document, updatePolygon } = useDocumentContext();
+    const { document, updatePolygon, getPolygonById } = useDocumentContext();
     const {
         editedFeatureIndex,
         editedFeatureSubpolygonIndex,
@@ -37,7 +37,7 @@ function PolygonControlPanel () {
         setEditedFeatureIndex(null);
     };
     const evt_saveEdit = () => {
-        const baseFeature = document.features.polygons[editedFeatureIndex];
+        const baseFeature = getPolygonById(editedFeature.originalId);
         const newFeature = DocumentUtil.savePolygonEdit(baseFeature, editedFeature);
         updatePolygon(editedFeature.originalId, newFeature);
 
