@@ -630,6 +630,7 @@ const useLeafletElementContainer = () => {
         const map = useMapEvents({
             click: evt_click,
             mousemove: evt_mousemove,
+            moveend: () => setEditPolygonFlag(!editPolygonFlag),
         });
     
         return null;

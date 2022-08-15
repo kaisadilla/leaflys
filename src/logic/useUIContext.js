@@ -34,7 +34,7 @@ export const UIContextProvider = ({ children }) => {
             snapDistance: DEFAULT_SNAP_DISTANCE,
             markerSize: DEFAULT_MARKER_SIZE,
             pencilStep: DEFAULT_PENCIL_STEP,
-            optimizeGraphics: false,
+            optimizeGraphics: true,
         },
         deleteTool: {
             vertexArray: [],
