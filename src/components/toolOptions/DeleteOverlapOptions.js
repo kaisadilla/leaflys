@@ -3,8 +3,8 @@ import Button from '../../elements/Button';
 import Checkbox from '../../elements/Checkbox';
 import InputCombo from '../../elements/InputCombo';
 import Slider from '../../elements/Slider';
-import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '../../logic/useUIContext';
-import { HELP_MESSAGE_TOOL_DELETE_OVERLAP, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
+import { useUIContext } from '../../logic/useUIContext';
+import { POLYGON_TOOLS, POLYGON_TOOL_MODES, HELP_MESSAGE_TOOL_DELETE_OVERLAP, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
 import { useDocumentContext } from '../../logic/useDocumentContext';
 import Dropdown from '../../elements/Dropdown';
 import { clipPolygon } from '../../util/Util';
@@ -33,7 +33,7 @@ function DeleteOverlapOptions (props) {
     const firstPolyInList = sortedPolygons[0] ? sortedPolygons[0].id : null;
     const [ selectedPoly, setSelectedPoly ] = useStateCallback(firstPolyInList);
 
-    if (editor.selectedTool !== POLYGON_EDITOR_TOOLS.deleteOverlap) return <></>
+    if (editor.selectedTool !== POLYGON_TOOLS.deleteOverlap) return <></>
 
     const evt_carve = (evt) => {
         if (selectedPoly !== null) {

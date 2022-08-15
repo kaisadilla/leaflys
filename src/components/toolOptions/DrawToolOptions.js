@@ -3,8 +3,8 @@ import Button from '../../elements/Button';
 import Checkbox from '../../elements/Checkbox';
 import InputCombo from '../../elements/InputCombo';
 import Slider from '../../elements/Slider';
-import { POLYGON_EDITOR_TOOLS, POLYGON_EDITOR_TOOL_MODES, useUIContext } from '../../logic/useUIContext';
-import { HELP_MESSAGE_TOOL_DRAW, HELP_MESSAGE_TOOL_DRAW_DRAW_LINE, HELP_MESSAGE_TOOL_DRAW_SNAP, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
+import { useUIContext } from '../../logic/useUIContext';
+import { HELP_MESSAGE_TOOL_DRAW, HELP_MESSAGE_TOOL_DRAW_DRAW_LINE, HELP_MESSAGE_TOOL_DRAW_SNAP, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN, POLYGON_TOOLS, POLYGON_TOOL_MODES } from '../../global';
 
 function DrawToolOptions (props) {
     const {
@@ -15,15 +15,17 @@ function DrawToolOptions (props) {
         setEditorSnapDistance,
         setEditorMarkerSize,
         setEditorPencilStep,
+        setEditorOptimizeGraphics,
     } = useUIContext();
 
     const evt_snap = (evt) => setEditorSnap(evt.target.checked);
     const evt_foreignFeatures = (evt) => setEditorShowForeignFeatures(evt.target.checked);
+    const evt_optimizeGraphics = (evt) => setEditorOptimizeGraphics(evt.target.checked);
     const evt_snapDistance = (evt) => setEditorSnapDistance(parseFloat(evt.target.value));
     const evt_markerSize = (evt) => setEditorMarkerSize(parseFloat(evt.target.value));
     const evt_pencilStep = (evt) => setEditorPencilStep(parseFloat(evt.target.value));
 
-    if (editor.selectedTool !== POLYGON_EDITOR_TOOLS.draw) return <></>;
+    if (editor.selectedTool !== POLYGON_TOOLS.draw) return <></>;
 
     return (
         <>
@@ -37,29 +39,29 @@ function DrawToolOptions (props) {
                     <div className="horizontal-control-group-controls">
                         <Button
                             icon="fa-map-pin" iconStyle="fad" title="Place corners"
-                            onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.place)}
-                            selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.place}
+                            onClick={() => setEditorSelectedToolMode(POLYGON_TOOL_MODES.place)}
+                            selected={editor.selectedToolMode === POLYGON_TOOL_MODES.place}
                         />
                         <Button
                             icon="fa-scribble" iconStyle="fa" title="Draw line"
-                            onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.draw)}
-                            selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.draw}
+                            onClick={() => setEditorSelectedToolMode(POLYGON_TOOL_MODES.draw)}
+                            selected={editor.selectedToolMode === POLYGON_TOOL_MODES.draw}
                         />
                         <Button
                             icon="fa-magnet" iconStyle="fad" title="Snap to foreign vertices"
-                            onClick={() => setEditorSelectedToolMode(POLYGON_EDITOR_TOOL_MODES.snap)}
-                            selected={editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.snap}
+                            onClick={() => setEditorSelectedToolMode(POLYGON_TOOL_MODES.snap)}
+                            selected={editor.selectedToolMode === POLYGON_TOOL_MODES.snap}
                         />
                     </div>
                 </div>
                 {
-                    editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.draw &&
+                    editor.selectedToolMode === POLYGON_TOOL_MODES.draw &&
                     <div className="help">
                         <p><b>Draw line</b> — <i>{HELP_MESSAGE_TOOL_DRAW_DRAW_LINE}</i></p>
                     </div>
                 }
                 {
-                    editor.selectedToolMode === POLYGON_EDITOR_TOOL_MODES.snap &&
+                    editor.selectedToolMode === POLYGON_TOOL_MODES.snap &&
                     <div className="help">
                         <p><b>Snap to foreign vertices</b> — <i>{HELP_MESSAGE_TOOL_DRAW_SNAP}</i></p>
                     </div>
@@ -77,6 +79,13 @@ function DrawToolOptions (props) {
                         label="Show other polygons."
                         checked={editor.showForeignFeatures}
                         onChange={evt_foreignFeatures}
+                        highlight
+                    />
+                    <Checkbox
+                        id="show-others"
+                        label="Opimize graphics."
+                        checked={editor.optimizeGraphics}
+                        onChange={evt_optimizeGraphics}
                         highlight
                     />
                 </div>

@@ -227,6 +227,23 @@
                 font-size: 10pt;
             }
         }
+
+        .delete-path-panel {
+            display: flex;
+            padding: 0 6px;
+
+            > span {
+                width: 100%;
+                text-align: left;
+            }
+
+            > .delete-path-buttons {
+                @include no-wrap();
+
+                display: flex;
+                column-gap: 6px;
+            }
+        }
     }
 
     .control-panel-edit {

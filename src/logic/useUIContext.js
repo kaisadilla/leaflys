@@ -1,33 +1,6 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { DEFAULT_MARKER_SIZE, DEFAULT_PENCIL_STEP, DEFAULT_SNAP_DISTANCE } from "../global";
+import { DEFAULT_MARKER_SIZE, DEFAULT_PENCIL_STEP, DEFAULT_SNAP_DISTANCE, EDITOR_MODES } from "../global";
 import { ToLeaflet } from "../util/TurfLeafletConversion";
-
-export const EDITOR_MODES = {
-    mapEditor: 0,
-    spreadsheet: 1,
-}
-
-export const EDITOR_MODES_NAMES = {
-    [EDITOR_MODES.mapEditor]: "Map editor",
-    [EDITOR_MODES.spreadsheet]: "Spreadsheet",
-}
-
-export const POLYGON_EDITOR_TOOLS = {
-    draw: 0,
-    edit: 1,
-    cut: 2,
-    eraser: 3,
-    move: 4,
-    selectStart: 5,
-    deletePath: 6,
-    deleteOverlap: 7,
-}
-
-export const POLYGON_EDITOR_TOOL_MODES = {
-    place: 0,
-    draw: 1,
-    snap: 2,
-}
 
 /**
  * Returns an object containing the necessary data to edit a feature.
@@ -61,6 +34,11 @@ export const UIContextProvider = ({ children }) => {
             snapDistance: DEFAULT_SNAP_DISTANCE,
             markerSize: DEFAULT_MARKER_SIZE,
             pencilStep: DEFAULT_PENCIL_STEP,
+            optimizeGraphics: false,
+        },
+        deleteTool: {
+            vertexArray: [],
+            direction: true,
         },
         flags: {
             editorUpdate: false,
@@ -93,7 +71,7 @@ export const UIContextProvider = ({ children }) => {
                     editor: {
                         ...state.editor,
                         selectedTool: null,
-                        selectedToolMode: POLYGON_EDITOR_TOOL_MODES.draw,
+                        selectedToolMode: null,
                     }
                 });
             }
@@ -105,13 +83,15 @@ export const UIContextProvider = ({ children }) => {
             ...state,
             editedFeatureSubpolygonIndex: index,
         });
-        
+
         const setEditedFeature = feature => {
-            setState({
-                ...state,
-                editedFeature: feature,
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    editedFeature: feature,
+                }
             });
-        };
+        }
         
         const setEditedFeatureAndSubindex = (feature, subindex) => {
             setState({
@@ -137,21 +117,29 @@ export const UIContextProvider = ({ children }) => {
             });
         }
 
-        const setEditorSelectedTool = tool => setState({
-            ...state,
-            editor: {
-                ...state.editor,
-                selectedTool: tool,
-            }
-        });
+        const setEditorSelectedTool = tool => {
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    editor: {
+                        ...prevState.editor,
+                        selectedTool: tool,
+                    }
+                };
+            });
+        };
 
-        const setEditorSelectedToolMode = mode => setState({
-            ...state,
-            editor: {
-                ...state.editor,
-                selectedToolMode: mode,
-            }
-        });
+        const setEditorSelectedToolMode = mode => {
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    editor: {
+                        ...prevState.editor,
+                        selectedToolMode: mode,
+                    }
+                };
+            });
+        };
 
         const setEditorSnap = active => setState({
             ...state,
@@ -193,6 +181,38 @@ export const UIContextProvider = ({ children }) => {
             }
         });
 
+        const setEditorOptimizeGraphics = optimize => setState({
+            ...state,
+            editor: {
+                ...state.editor,
+                optimizeGraphics: optimize,
+            }
+        });
+
+        const setDeleteToolVertexArray = array => {
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    deleteTool: {
+                        ...prevState.deleteTool,
+                        vertexArray: array,
+                    }
+                }
+            });
+        };
+
+        const setDeleteToolDirection = direction => {
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    deleteTool: {
+                        ...prevState.deleteTool,
+                        direction: direction,
+                    }
+                }
+            });
+        };
+
         return {
             ...state,
             setEditorMode,
@@ -205,9 +225,12 @@ export const UIContextProvider = ({ children }) => {
             setEditorSelectedToolMode,
             setEditorSnap,
             setEditorShowForeignFeatures,
+            setEditorOptimizeGraphics,
             setEditorSnapDistance,
             setEditorMarkerSize,
             setEditorPencilStep,
+            setDeleteToolVertexArray,
+            setDeleteToolDirection,
         }
     }, [state]);
 

@@ -4,7 +4,7 @@ import { useDocumentContext } from '../../logic/useDocumentContext';
 import { useUIContext } from '../../logic/useUIContext';
 import DrawToolOptions from '../toolOptions/DrawToolOptions';
 import DeleteOverlapOptions from '../toolOptions/DeleteOverlapOptions';
-import DeleteCornersOptions from '../toolOptions/DeleteCornersOptions';
+import DeleteCornersOptions from '../toolOptions/DeleteVerticesOptions';
 import PolygonProperties from './PolygonProperties';
 import PolygonToolbar from './PolygonToolbar';
 import EditedPolygonData from './EditedPolygonData';

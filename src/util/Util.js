@@ -43,3 +43,56 @@ export function calculateEditedVertices (polygons) {
 
     return count;
 }
+
+/**
+ * Given an array and an index, returns a new array that starts at the
+ * new index given, appending the elements before that index to the end.
+ * @param {*} arr The array to manipulate
+ * @param {*} newIndex The index of the element that will now be at the start.
+ * @returns A new array containing the items rearranged.
+ */
+export function setNewArrayStart (arr, newIndex) {
+    arr = [...arr];
+    const newStart = arr.splice(newIndex, arr.length - newIndex);
+    arr = [...newStart, ...arr];
+
+    return arr;
+}
+
+/**
+ * Given an array, selects all elements that are between two indices. If the second
+ * index is smaller than the first, the function will roll over to the start to
+ * keep going until it reaches the end index.
+ * @param {*} arr The array to search.
+ * @param {*} start The index of the first element.
+ * @param {*} end The index of the last element (inclusive).
+ * @param {*} direction True to go forward, false to go backwards.
+ * @returns An object containing an array with all the elements selected, and
+ * another array with all indices selected.
+ */
+export function getElementsBetween (arr, start, end, direction = true) {
+    let i = start;
+    const elements = [];
+    const indices = [];
+
+    while (true) {
+        if (direction === true) {
+            i++;
+            if (i > arr.length - 1) i = 0;
+        }
+        else {
+            i--;
+            if (i === 0) i = arr.length - 1;
+        }
+
+        elements.push(arr[i]);
+        indices.push(i);
+
+        if (i === end) break;
+    }
+
+    return {
+        elements,
+        indices
+    };
+}
