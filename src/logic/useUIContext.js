@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { DEFAULT_MARKER_SIZE, DEFAULT_PENCIL_STEP, DEFAULT_SNAP_DISTANCE, EDITOR_MODES } from "../global";
+import { DEFAULT_MARKER_SIZE, DEFAULT_PENCIL_STEP, DEFAULT_SNAP_DISTANCE, DEFAULT_ZOOM, EDITOR_MODES } from "../global";
 import { ToLeaflet } from "../util/TurfLeafletConversion";
 
 /**
@@ -35,6 +35,9 @@ export const UIContextProvider = ({ children }) => {
             markerSize: DEFAULT_MARKER_SIZE,
             pencilStep: DEFAULT_PENCIL_STEP,
             optimizeGraphics: true,
+        },
+        mapData: {
+            zoom: DEFAULT_ZOOM,
         },
         deleteTool: {
             vertexArray: [],
@@ -213,6 +216,18 @@ export const UIContextProvider = ({ children }) => {
             });
         };
 
+        const setMapDataZoom = zoom => {
+            setState(prevState => {
+                return {
+                    ...prevState,
+                    mapData: {
+                        ...prevState.mapData,
+                        zoom: zoom
+                    }
+                };
+            });
+        }
+
         return {
             ...state,
             setEditorMode,
@@ -231,6 +246,7 @@ export const UIContextProvider = ({ children }) => {
             setEditorPencilStep,
             setDeleteToolVertexArray,
             setDeleteToolDirection,
+            setMapDataZoom,
         }
     }, [state]);
 

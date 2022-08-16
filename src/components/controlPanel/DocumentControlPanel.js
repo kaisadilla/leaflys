@@ -3,6 +3,7 @@ import Button from '../../elements/Button';
 import Switch from '../../elements/Switch';
 import { useDocumentContext } from '../../logic/useDocumentContext';
 import { useEventContext } from '../../logic/useEventContext';
+import { useUIContext } from '../../logic/useUIContext';
 import NewPolygonDialog from '../dialogs/NewPolygonDialog';
 import FeatureCollection from '../FeatureCollection';
 import OverlayImagesSection from '../OverlayImagesSection';
@@ -20,6 +21,8 @@ function DocumentControlPanel () {
     const {
         setCategoryEnabled,
     } = useDocumentContext();
+
+    const { mapData } = useUIContext();
 
     const $polygonCollections = getPolygonCategories().map(cat => (
         <React.Fragment key={cat}>
@@ -53,6 +56,7 @@ function DocumentControlPanel () {
             <div className="editor-control-panel">
                 <div className="control-panel">
                     <h1 className="control-panel-header">Document</h1>
+                    <span>zoom: {mapData.zoom}</span>
                     <OverlayImagesSection />
                     <h1 className="collection-section control-panel-header">
                         <div className="left">

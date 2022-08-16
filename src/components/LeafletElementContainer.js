@@ -29,7 +29,7 @@ function LeafletElementContainer (props) {
             {$backgroundPolygons}
             {$editedPolygons}
             {$editionElementsDraw}
-            {editedFeature !== null && <LeafletEditInteraction />}
+            {<LeafletEditInteraction />}
         </>
     );
 }

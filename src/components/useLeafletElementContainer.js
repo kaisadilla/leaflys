@@ -29,6 +29,8 @@ const useLeafletElementContainer = () => {
         setEditorSelectedTool,
         deleteTool,
         setDeleteToolVertexArray,
+        mapData,
+        setMapDataZoom,
     } = useUIContext();
 
     const { keys } = useEventContext();
@@ -88,7 +90,7 @@ const useLeafletElementContainer = () => {
 
     useEffect(() => {
         setEditPolygonFlag(!editPolygonFlag);
-    }, [editedFeature?.polygons, deleteTool, editor.optimizeGraphics]);
+    }, [editedFeature?.polygons, deleteTool, editor.optimizeGraphics, mapData.zoom]);
 
     useEffect(() => {
         console.info("[DEBUG] Layout images rerendered.");
@@ -631,6 +633,7 @@ const useLeafletElementContainer = () => {
             click: evt_click,
             mousemove: evt_mousemove,
             moveend: () => setEditPolygonFlag(!editPolygonFlag),
+            zoom: (evt) => setMapDataZoom(evt.target._zoom),
         });
     
         return null;
