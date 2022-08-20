@@ -136,14 +136,18 @@ const useLeafletElementContainer = () => {
     ]);
 
     useEffect(() => {
-        if (editedFeatureIndex !== null) {
+        if (editedFeatureIndex !== null && editor.snap) {
             const _foreignVertices = _getForeignSnapVertices();
             const _foreignRings = _getForeignSnapRings();
     
             setEditSnapVertices(turf.featureCollection(_foreignVertices));
             setEditSnapRings(turf.multiLineString(_foreignRings));
         }
-    }, [editedFeatureIndex]);
+        else {
+            setEditSnapVertices([]);
+            setEditSnapRings([]);
+        }
+    }, [editedFeatureIndex, editor.snap]);
 
     function buildLayoutImages () {
         const elements = layoutImages.map((img, i) => {
