@@ -1,39 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '../../elements/Button';
-import Checkbox from '../../elements/Checkbox';
 import InputCombo from '../../elements/InputCombo';
-import Slider from '../../elements/Slider';
 import { useUIContext } from '../../logic/useUIContext';
-import { POLYGON_TOOLS, POLYGON_TOOL_MODES, HELP_MESSAGE_TOOL_DELETE_OVERLAP, POLYGON_EDITOR_MARKER_SIZE, POLYGON_EDITOR_PENCIL_STEP, POLYGON_EDITOR_SNAP_DISTANCE, POLYGON_EDITOR_SNAP_DISTANCE_MAX, POLYGON_EDITOR_SNAP_DISTANCE_MIN } from '../../global';
+import { HELP_MESSAGE_TOOL_DIFFERENCE, HELP_WARNING_INACCURATE } from '../../global';
 import { useDocumentContext } from '../../logic/useDocumentContext';
-import Dropdown from '../../elements/Dropdown';
-import { clipPolygon } from '../../util/Util';
+import { clipPolygon, getSortedActivePolygons } from '../../util/Util';
 import { useStateCallback } from '../../ext/useStateCallback';
 import { ToGeoJSON } from '../../util/TurfLeafletConversion';
 
-function DeleteOverlapOptions (props) {
+function SubtractOptions (props) {
     const {
         document,
         getPolygonById,
-        forceRedrawFlag,
     } = useDocumentContext();
 
     const {
-        editor,
         editedFeature,
         setEditedFeatureGeometry
     } = useUIContext();
 
-    const sortedPolygons = [...document.features.polygons]
-        // enabled polygons that are not the currently edited polygon.
-        .filter((p => (p.properties.leaflys.enabled ?? true) && (p.id !== editedFeature.id)))
-        // sort alphabetically.
-        .sort((a, b) => a.properties.name.localeCompare(b.properties.name));
+    const sortedPolygons = getSortedActivePolygons(document.features.polygons, [editedFeature.id]);
 
     const firstPolyInList = sortedPolygons[0] ? sortedPolygons[0].id : null;
     const [ selectedPoly, setSelectedPoly ] = useStateCallback(firstPolyInList);
-
-    if (editor.selectedTool !== POLYGON_TOOLS.deleteOverlap) return <></>
 
     const evt_carve = (evt) => {
         if (selectedPoly !== null) {
@@ -45,9 +34,10 @@ function DeleteOverlapOptions (props) {
 
     return (
         <>
-            <h2 className="control-panel-header">Clip overlapping polygon tool</h2>
+            <h2 className="control-panel-header">Polygon difference tool</h2>
             <div className="help">
-                <p><i>{HELP_MESSAGE_TOOL_DELETE_OVERLAP}</i></p>
+                <p><i>{HELP_MESSAGE_TOOL_DIFFERENCE}</i></p>
+                <p><b>WARNING: </b><i>{HELP_WARNING_INACCURATE}</i></p>
             </div>
             <div className="tool-options">
                 <InputCombo>
@@ -72,4 +62,4 @@ function DeleteOverlapOptions (props) {
     );
 }
 
-export default DeleteOverlapOptions;
+export default SubtractOptions;

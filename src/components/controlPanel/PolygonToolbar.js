@@ -49,10 +49,19 @@ function PolygonToolbar () {
                         selected={editor.selectedTool === POLYGON_TOOLS.eraser}
                     />
                     <Button
-                        disabled
-                        icon="open_with" iconStyle="g-round" title="Move shape (not available)"
-                        onClick={() => setTool(POLYGON_TOOLS.move)}
-                        selected={editor.selectedTool === POLYGON_TOOLS.move}
+                        icon="fa-object-union" iconStyle="fad" title="Polygon union"
+                        onClick={() => setTool(POLYGON_TOOLS.union)}
+                        selected={editor.selectedTool === POLYGON_TOOLS.union}
+                    />
+                    <Button
+                        icon="fa-object-subtract" iconStyle="fad" title="Polygon difference"
+                        onClick={() => setTool(POLYGON_TOOLS.difference)}
+                        selected={editor.selectedTool === POLYGON_TOOLS.difference}
+                    />
+                    <Button
+                        icon="fa-object-intersect" iconStyle="fad" title="Polygon intersect"
+                        onClick={() => setTool(POLYGON_TOOLS.intersect)}
+                        selected={editor.selectedTool === POLYGON_TOOLS.intersect}
                     />
                     <Button
                         icon="fa-bullseye-pointer" iconStyle="fad" title="Select last vertex"
@@ -60,9 +69,10 @@ function PolygonToolbar () {
                         selected={editor.selectedTool === POLYGON_TOOLS.selectEnd}
                     />
                     <Button
-                        icon="fa-diagram-venn" iconStyle="fa" title="Clip overlapping polygon"
-                        onClick={() => setTool(POLYGON_TOOLS.deleteOverlap)}
-                        selected={editor.selectedTool === POLYGON_TOOLS.deleteOverlap}
+                        disabled
+                        icon="open_with" iconStyle="g-round" title="Move shape (not available)"
+                        onClick={() => setTool(POLYGON_TOOLS.move)}
+                        selected={editor.selectedTool === POLYGON_TOOLS.move}
                     />
                 </div>
             </div>

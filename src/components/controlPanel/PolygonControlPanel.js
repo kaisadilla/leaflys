@@ -3,12 +3,15 @@ import Button from '../../elements/Button';
 import { useDocumentContext } from '../../logic/useDocumentContext';
 import { useUIContext } from '../../logic/useUIContext';
 import DrawToolOptions from '../toolOptions/DrawToolOptions';
-import DeleteOverlapOptions from '../toolOptions/DeleteOverlapOptions';
 import DeleteCornersOptions from '../toolOptions/DeleteVerticesOptions';
 import PolygonProperties from './PolygonProperties';
 import PolygonToolbar from './PolygonToolbar';
 import EditedPolygonData from './EditedPolygonData';
 import DocumentUtil from '../../util/DocumentUtil';
+import DifferenceOptions from '../toolOptions/DifferenceOptions';
+import UnionOptions from '../toolOptions/UnionOptions';
+import IntersectOptions from '../toolOptions/IntersectOptions';
+import { POLYGON_TOOLS } from '../../global';
 
 function PolygonControlPanel () {
     const { document, updatePolygon, getPolygonById } = useDocumentContext();
@@ -21,6 +24,7 @@ function PolygonControlPanel () {
         setEditedFeatureSubpolygonIndex,
         setEditedFeatureAndSubindex,
         setEditorSelectedTool,
+        mapData,
     } = useUIContext();
 
     const $subPolygons = editedFeature.polygons.map((p, i) => (
@@ -77,6 +81,7 @@ function PolygonControlPanel () {
                 <div className="shadow-border" />
             </div>
             <div className="control-panel control-panel-edit">
+                <span>zoom: {mapData.zoom}</span>
                 <h2 className="control-panel-header">Properties</h2>
                 <PolygonProperties />
                 <h2 className="control-panel-header">{$subpolygonText}</h2>
@@ -90,7 +95,9 @@ function PolygonControlPanel () {
                 <>
                     <DrawToolOptions />
                     <DeleteCornersOptions />
-                    <DeleteOverlapOptions />
+                    {editor.selectedTool === POLYGON_TOOLS.union && <UnionOptions />}
+                    {editor.selectedTool === POLYGON_TOOLS.difference && <DifferenceOptions />}
+                    {editor.selectedTool === POLYGON_TOOLS.intersect &&  <IntersectOptions />}
                 </>
                 <h2 className="control-panel-header">Data</h2>
                 <EditedPolygonData />

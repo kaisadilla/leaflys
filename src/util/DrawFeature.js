@@ -55,6 +55,8 @@ function buildPolygon_draw (polygon, key, color, vertexIcon, bounds = null) {
  * @param {*} createIcon An icon for the midpoints of each polygon side.
  * @param {replaceVertexFunc} replaceVertexFunc A function to replace vertices in the polygon.
  * @param {insertVertexFunc} insertVertexFunc A function to insert vertices into the polygon.
+ * @param {*} bounds The bounds of the map. If defined, only vertices within
+ * these bounds will be rendered.
  * 
  * @callback replaceVertexFunc
  * @param {*} index The position in the polygon array.
@@ -64,7 +66,10 @@ function buildPolygon_draw (polygon, key, color, vertexIcon, bounds = null) {
  * @param {*} index The position in the polygon array.
  * @param {*} position The position for the vertex.
  */
-function buildPolygon_edit (polygon, key, color, dragIcon, createIcon, replaceVertexFunc, insertVertexFunc) {
+function buildPolygon_edit (
+    polygon, key, color, dragIcon, createIcon,
+    replaceVertexFunc, insertVertexFunc, bounds = null
+) {
     const _leafletFeatures = [];
 
     if (polygon[0].length > 0) {
@@ -77,16 +82,6 @@ function buildPolygon_edit (polygon, key, color, dragIcon, createIcon, replaceVe
                         replaceVertexFunc(c, e.target._latlng);
                     }
                 }
-                
-                _leafletFeatures.push(
-                    <Marker
-                        key={["marker", key, r, c]}
-                        position={ring[c]}
-                        icon={dragIcon}
-                        eventHandlers={dragVertex}
-                        draggable={true}
-                    />
-                );
 
                 const thisRing = ring[c];
                 const lastRing = c === "0" ? ring[ring.length - 1] : ring[c - 1];
@@ -110,14 +105,26 @@ function buildPolygon_edit (polygon, key, color, dragIcon, createIcon, replaceVe
                     }
                 }
 
-                _leafletFeatures.push(
-                    <Marker
-                        key={["marker-add", key, r, c]}
-                        position={lMidPoint}
-                        icon={createIcon}
-                        eventHandlers={addVertex}
-                    />
-                );
+                if (!bounds || bounds.contains(ring[c])) {
+                    _leafletFeatures.push(
+                        <Marker
+                            key={["marker", key, r, c]}
+                            position={ring[c]}
+                            icon={dragIcon}
+                            eventHandlers={dragVertex}
+                            draggable={true}
+                        />
+                    );
+
+                    _leafletFeatures.push(
+                        <Marker
+                            key={["marker-add", key, r, c]}
+                            position={lMidPoint}
+                            icon={createIcon}
+                            eventHandlers={addVertex}
+                        />
+                    );
+                }
             }
         }
 
@@ -141,12 +148,17 @@ function buildPolygon_edit (polygon, key, color, dragIcon, createIcon, replaceVe
  * @param {*} color The color of this polygon.
  * @param {*} deleteIcon The icon of the delete markers.
  * @param {deleteVertexFunc} deleteVertexFunc A function to delete vertices from the polygon.
+ * @param {*} bounds The bounds of the map. If defined, only vertices within
+ * these bounds will be rendered.
  * 
  * @callback deleteVertexFunc
  * @param {*} index The position in the polygon array.
  * @returns 
  */
-function buildPolygon_delete (polygon, key, color, deleteIcon, deleteVertexFunc) {
+function buildPolygon_delete (
+    polygon, key, color, deleteIcon,
+    deleteVertexFunc, bounds = null
+) {
     const _leafletFeatures = [];
 
     if (polygon[0].length === 0) {
@@ -170,15 +182,17 @@ function buildPolygon_delete (polygon, key, color, deleteIcon, deleteVertexFunc)
                     deleteVertexFunc(c);
                 }
             }
-            
-            _leafletFeatures.push(
-                <Marker
-                    key={["delete-marker", key, r, c]}
-                    position={ring[c]}
-                    icon={deleteIcon}
-                    eventHandlers={evt_removeVertex}
-                />
-            );
+
+            if (!bounds || bounds.contains(ring[c])) {
+                _leafletFeatures.push(
+                    <Marker
+                        key={["delete-marker", key, r, c]}
+                        position={ring[c]}
+                        icon={deleteIcon}
+                        eventHandlers={evt_removeVertex}
+                    />
+                );
+            }
         }
     }
 
@@ -196,6 +210,8 @@ function buildPolygon_delete (polygon, key, color, deleteIcon, deleteVertexFunc)
  * @param {*} selectedVertices An array of selected vertices.
  * @param {bool} direction "true" for forward, "false" for backward.
  * @param {selectVertexFunc} selectVertexFunc A function to call when a vertex is clicked.
+ * @param {*} bounds The bounds of the map. If defined, only vertices within
+ * these bounds will be rendered.
  * 
  * @callback selectVertexFunc
  * @param {*} index The position of the vertex in the polygon array.
@@ -203,7 +219,7 @@ function buildPolygon_delete (polygon, key, color, deleteIcon, deleteVertexFunc)
  */
 function buildPolygon_deletePath (
     polygon, key, color, vertexIcon, highlightIcon, selectedIcon,
-    selectedVertices, direction, selectVertexFunc
+    selectedVertices, direction, selectVertexFunc, bounds = null
 ) {
     if (polygon[0].length === 0) return [];
 
@@ -260,15 +276,17 @@ function buildPolygon_deletePath (
                     icon = highlightIcon;
                 }
             }
-            
-            _leafletFeatures.push(
-                <Marker
-                    key={["delete-marker", key, r, c]}
-                    position={ring[c]}
-                    icon={icon}
-                    eventHandlers={evt_clickMarker}
-                />
-            );
+
+            if (!bounds || bounds.contains(ring[c])) {
+                _leafletFeatures.push(
+                    <Marker
+                        key={["delete-marker", key, r, c]}
+                        position={ring[c]}
+                        icon={icon}
+                        eventHandlers={evt_clickMarker}
+                    />
+                );
+            }
         }
     }
 

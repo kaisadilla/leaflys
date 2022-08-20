@@ -13,7 +13,9 @@ function LeafletMap () {
             className="map-frame"
             center={DEFAULT_MAP_CENTER}
             zoom={DEFAULT_ZOOM}
-            zoomSnap={1}
+            zoomDelta={1} // amount of zoom per double click.
+            wheelPxPerZoomLevel={80} // amount of "wheel pixels" for one zoom level.
+            zoomSnap={1} // zoom has to be a multiple of this.
         >
             <LayersControl>
                 <LayersControl.BaseLayer name="map" checked>

@@ -43,7 +43,9 @@ export const POLYGON_TOOLS = {
     eraser: 3,
     move: 4,
     selectEnd: 5,
-    deleteOverlap: 6,
+    union: 6,
+    difference: 7,
+    intersect: 8,
 }
 
 export const POLYGON_TOOL_MODES = {
@@ -77,9 +79,23 @@ export const HELP_MESSAGE_TOOL_SELECT_START =
     "Select one of the vertices to set it at the new first vertex of " +
     "your polygon!";
 
-export const HELP_MESSAGE_TOOL_DELETE_OVERLAP =
+export const HELP_WARNING_INACCURATE =
+    "This tool may be inaccurate for large polygons with long sides. " +
+    "If you want to eliminate this inaccuracy, add a vertex to each " +
+    "polygon exactly at any intersection between their sides.";
+
+export const HELP_MESSAGE_TOOL_UNION =
+    "Select another polygon by clicking it on the map or choosing it on " +
+    "the menu below. Then press \"Join\" to add that polygon's area to yours!";
+
+export const HELP_MESSAGE_TOOL_DIFFERENCE =
     "Select another polygon by clicking it on the map or choosing it on " +
     "the menu below. Then press \"Carve\" to cut that polygon from yours!";
+
+export const HELP_MESSAGE_TOOL_INTERSECTION =
+    "Select another polygon by clicking it on the map or choosing it on " +
+    "the menu below. Then press \"Clip\" to remove all the area in your " +
+    "polygon that's outside the area of the chosen polygon.";
 
 export const HELP_MESSAGE_TOOL_DRAW_DRAW_LINE =
     "Press and hold 'Z' to draw a line of vertices.";

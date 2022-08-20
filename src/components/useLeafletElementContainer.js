@@ -259,6 +259,7 @@ const useLeafletElementContainer = () => {
     }
 
     function buildEditSubpolygon (subpolygon, key, color) {
+        const bounds = editor.optimizeGraphics ? map.getBounds() : null;
         return DrawFeature.polygon.editMode(
             subpolygon,
             key,
@@ -267,20 +268,26 @@ const useLeafletElementContainer = () => {
             ICON_EDIT_VERTEX_MIDPOINT,
             _replaceVertexAt,
             _insertVertexAt,
+            bounds
         );
     }
 
     function buildDeleteSubpolygon (subpolygon, key, color) {
+        const bounds = editor.optimizeGraphics ? map.getBounds() : null;
+        
         return DrawFeature.polygon.deleteMode(
             subpolygon,
             key,
             color,
             ICON_DELETE,
-            _deleteVertexAt
+            _deleteVertexAt,
+            bounds,
         );
     }
 
     function buildDeletePathSubpolygon (subpolygon, key, color) {
+        const bounds = editor.optimizeGraphics ? map.getBounds() : null;
+
         const addChosenVertex = (vertexIndex) => {
             // when clicking on a vertex that is selected, deselect it.
             if (deleteTool.vertexArray.includes(vertexIndex)) {
@@ -313,7 +320,8 @@ const useLeafletElementContainer = () => {
             ICON_DELETE_SELECTED,
             deleteTool.vertexArray,
             deleteTool.direction,
-            addChosenVertex
+            addChosenVertex,
+            bounds,
         );
     }
 

@@ -14,6 +14,32 @@ export function clipPolygon (target, clipper) {
 }
 
 /**
+ * Returns the first polygon given, with all of the area of the
+ * second polygon added to it. Be aware that, due to a bug in Turf's
+ * line intersection calculation, the resulting cut may not be precise.
+ * @param {*} poly1 The polygon to add to.
+ * @param {*} poly2 The polygon whose area will be added to the first.
+ * @returns 
+ */
+export function polygonUnion (poly1, poly2) {
+    const fusedPoly = turf.union(poly1, poly2);
+    return fusedPoly;
+}
+
+/**
+ * Returns the intersection between the two polygons.
+ * Be aware that, due to a bug in Turf's
+ * line intersection calculation, the resulting cut may not be precise.
+ * @param {*} poly1 The first polygon.
+ * @param {*} poly2 The second polygon.
+ * @returns 
+ */
+export function polygonIntersect (poly1, poly2) {
+    const intersection = turf.intersect(poly1, poly2);
+    return intersection;
+}
+
+/**
  * Calculates the area of a set of EDITOR polygons (not geojson).
  * @param {*} subpolygonArray The polygons array in the edited feature.
  * @returns The area of the polygons, in squared meters.
@@ -95,4 +121,22 @@ export function getElementsBetween (arr, start, end, direction = true) {
         elements,
         indices
     };
+}
+
+/**
+ * Gets all the polygons in the array, in alphabetical order, that are enabled.
+ * @param {*} polygonArray The polygon array in the document.
+ * @param {*} excludeIdArray Optionally, an array of ids of polygons to exclude.
+ */
+export function getSortedActivePolygons (polygonArray, excludeIdArray) {
+    return [...polygonArray]
+        // enabled polygons that are not in the exclude array.
+        .filter(p => {
+            const enabled = p.properties.leaflys.enabled ?? true;
+            const notExcluded = !excludeIdArray || !excludeIdArray.includes(p.id);
+
+            return enabled && notExcluded;
+        })
+        // sort alphabetically.
+        .sort((a, b) => a.properties.name.localeCompare(b.properties.name));
 }
