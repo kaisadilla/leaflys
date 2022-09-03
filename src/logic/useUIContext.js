@@ -29,7 +29,7 @@ export const UIContextProvider = ({ children }) => {
         editor: {
             selectedTool: null,
             selectedToolMode: null,
-            snap: true,
+            snap: false,
             showForeignFeatures: true,
             snapDistance: DEFAULT_SNAP_DISTANCE,
             markerSize: DEFAULT_MARKER_SIZE,

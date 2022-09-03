@@ -18,7 +18,7 @@ function LeafletMap () {
             zoomSnap={1} // zoom has to be a multiple of this.
         >
             <LayersControl>
-                <LayersControl.BaseLayer name="map" checked>
+                <LayersControl.BaseLayer name="Map" checked>
                     <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
