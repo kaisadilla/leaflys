@@ -9,7 +9,7 @@ import { useUIContext } from '../logic/useUIContext';
 import { useDocumentContext } from '../logic/useDocumentContext';
 import ConfirmDialog from '../elements/ConfirmDialog';
 
-function FeatureCollection_Feature(props) {
+function FeatureCollection_Feature (props) {
     const { updatePolygon, deletePolygon } = useDocumentContext();
     const { setEditedFeatureIndex } = useUIContext();
 
